@@ -1,8 +1,3 @@
-
-
-
-
-
 #########################################################
 # Load Modules
 from transformers import AutoTokenizer, AutoModelForTokenClassification, TrainingArguments
