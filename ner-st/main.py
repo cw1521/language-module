@@ -10,7 +10,6 @@ from os import getcwd
 
 
 
-
 auth_token_path = f"{getcwd()}/auth_key.json"
 
 
@@ -22,9 +21,7 @@ def get_auth_key():
 
 
 
-
 auth_token = get_auth_key()
-
 
 
 
@@ -32,10 +29,14 @@ auth_token = get_auth_key()
 max_input_length = 128
 max_target_length = 128
 
+dataset_name = "cw1521/en-st-ner-small"
+model_name = "ner-st-sm-10"
+model_checkpoint = "cw1521/opus-mt-en-st"
 
-dataset_name = "cw1521/en-st"
-model_name = "en-st-lg-40"
-model_checkpoint = "cw1521/en-st-lg-30"
+
+
+
+
 
 
 
@@ -47,6 +48,9 @@ def get_dataset(name):
         use_auth_token=auth_token,
         field="data"
     )
+
+
+
 
 def get_datafiles():
     train = [
@@ -66,30 +70,33 @@ def get_datafiles():
     return train, valid
 
 
-raw_data = get_dataset(dataset_name)
 
+
+
+
+raw_data = get_dataset(dataset_name)
 
 metric = load_metric("sacrebleu")
 
-tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
+tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, use_auth_token=auth_token)
 
 
 
-model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint, use_auth_token=auth_token)
 data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 
 
 
 def preprocess_function(examples):
     model_inputs = tokenizer(
-        examples["target"],
+        examples["ner_sentence"],
         max_length=max_input_length,
         truncation=True
     )
   
     with tokenizer.as_target_tokenizer():
         labels = tokenizer(
-            examples["input"],
+            examples["state"],
             max_length=max_target_length,
             truncation=True
         )
@@ -100,13 +107,9 @@ def preprocess_function(examples):
 
 
 
-
-
-
 tokenized_data = raw_data.map(
-    preprocess_function, batched=True, remove_columns=["input", "target"]
+    preprocess_function, batched=True, remove_columns=["ner_sentence", "state"]
 )
-
 
 
 def get_training_args(num_epochs):
@@ -124,7 +127,7 @@ def get_training_args(num_epochs):
         num_train_epochs=num_epochs,
         predict_with_generate=True,
         logging_dir='./logs',
-	    gradient_accumulation_steps=4,
+    	gradient_accumulation_steps=4,
     	gradient_checkpointing=True,
 	    tf32=True
     )

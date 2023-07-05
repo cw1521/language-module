@@ -6,9 +6,13 @@ from transformers import Seq2SeqTrainingArguments
 import numpy as np
 from transformers import Seq2SeqTrainer
 from json import load
+from os import getcwd
 
 
-auth_token_path = "../auth_key.json"
+
+
+auth_token_path = f"{getcwd()}/auth_key.json"
+
 
 
 def get_auth_key():
@@ -18,10 +22,7 @@ def get_auth_key():
 
 
 
-
 auth_token = get_auth_key()
-
-
 
 
 max_input_length = 128
@@ -30,6 +31,7 @@ max_target_length = 128
 dataset_name = "cw1521/en-st"
 model_name = "st-en-lg-40"
 model_checkpoint = "cw1521/st-en-lg-30"
+
 
 
 
@@ -82,13 +84,26 @@ data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 
 
 def preprocess_function(examples):
-  model_inputs = tokenizer(examples["input"], max_length=max_input_length, truncation=True)
+    model_inputs = tokenizer(
+        examples["input"], 
+        max_length=max_input_length,
+        truncation=True
+    )
   
-  with tokenizer.as_target_tokenizer():
-    labels = tokenizer(examples["target"], max_length=max_target_length, truncation=True)
+    with tokenizer.as_target_tokenizer():
+        labels = tokenizer(
+            examples["target"],
+            max_length=max_target_length,
+            truncation=True
+        )
 
-  model_inputs["labels"] = labels["input_ids"]
-  return model_inputs
+    model_inputs["labels"] = labels["input_ids"]
+    return model_inputs
+
+
+
+
+
 
 tokenized_data = raw_data.map(
     preprocess_function, batched=True, remove_columns=["input", "target"]
@@ -100,7 +115,6 @@ def get_training_args(num_epochs):
     eval_batch_size = 64
     args = Seq2SeqTrainingArguments(
         model_name,
-        # push_to_hub=True,
         save_steps=50,
         evaluation_strategy = "epoch",
         learning_rate=2e-5,
@@ -110,7 +124,6 @@ def get_training_args(num_epochs):
         save_total_limit=3,
         num_train_epochs=num_epochs,
         predict_with_generate=True,
-        hub_token=auth_token,
         logging_dir='./logs',
     	gradient_accumulation_steps=4,
     	gradient_checkpointing=True,
@@ -168,4 +181,4 @@ def get_trainer(num_epochs):
 trainer = get_trainer(10)
 
 trainer.train()
-model.save_pretrained(model_name)
+model.save_pretrained(getcwd()+model_name)
