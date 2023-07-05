@@ -74,11 +74,13 @@ raw_data = get_dataset(dataset_name)
 
 metric = load_metric("sacrebleu")
 
-tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, use_auth_token=auth_token)
+tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 
 
 
-model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint, use_auth_token=auth_token)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)
+
+
 data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 
 
@@ -127,8 +129,7 @@ def get_training_args(num_epochs):
         logging_dir='./logs',
     	gradient_accumulation_steps=4,
     	gradient_checkpointing=True,
-	tf32=True
-
+	    tf32=True
     )
     return args
 
