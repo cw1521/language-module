@@ -27,7 +27,7 @@ def get_auth_key(path):
 ##########################################################
 # Constants
 
-auth_token_path = f"{getcwd()}\\..\\auth_key.json"
+auth_token_path = f"{getcwd()}\\auth_key.json"
 
 model_checkpoint = "distilbert-base-uncased"
 dataset_name = "cw1521/en-st-ner-small"
@@ -37,6 +37,7 @@ model_name = "nl-ner-sm-10"
 
 auth_token = get_auth_key(auth_token_path)
 output_path = f"{getcwd()}\\output\\{model_name}"
+
 
 
 
@@ -144,18 +145,6 @@ dataset = get_dataset(dataset_name)
 
 
 #########################################################
-# Print Structure of Dataset and Number of Elements
-print(f"Structure of Dataset:\n{dataset}")
-print(f'Total number of elements in dataset: {len(dataset["train"]) + len(dataset["test"]) + len(dataset["validation"])}')
-
-# Example Data Item
-print(f"Example data item:\n{dataset['train'][0]}")
-
-
-
-
-
-#########################################################
 # Load Tokenizer, Model, and Data Collator
 
 tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
@@ -169,6 +158,7 @@ data_collator = DataCollatorForTokenClassification(tokenizer)
 
 #########################################################
 # Tokenize Datasets
+
 def tokenize_and_align_labels(examples):
     tokenized_inputs = tokenizer(examples["sentence"], truncation=True)
     tokenized_inputs["labels"] = examples["ner_tags"]
@@ -176,9 +166,7 @@ def tokenize_and_align_labels(examples):
 
 
 train_tokenized_datasets = dataset["train"].map(tokenize_and_align_labels, batched=True)
-valid_tokenized_datasets = dataset["validation"].map(tokenize_and_align_labels, batched=True)
-
-
+valid_tokenized_datasets = dataset["valid"].map(tokenize_and_align_labels, batched=True)
 
 
 
@@ -205,7 +193,7 @@ def compute_metrics(p):
 #########################################################
 # Trainer Arguments and Trainer
 def get_training_args(num_epochs):
-    batch_size = 256
+    batch_size = 64
     args = TrainingArguments(
         model_name,
         save_steps=50,
@@ -234,6 +222,8 @@ trainer = Trainer(
     tokenizer=tokenizer,
     compute_metrics=compute_metrics
 )
+
+
 
 
 
