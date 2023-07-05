@@ -1,9 +1,8 @@
-# language-module
+# Language-Module
 
-Language model transformer trainer 
-st-en translation
-en-st translation
-ner-st translation
-nl-ner named entity recognition
-
-decrease batch_size for smaller machines
+This program trains transformers using the HuggingFace API\n 
+st-en: translation\n
+en-st: translation\n
+ner-st: translation\n
+nl-ner: named entity recognition\n
+decrease batch_size for smaller machines\n
