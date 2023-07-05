@@ -8,11 +8,11 @@ from transformers import Seq2SeqTrainer
 import torch
 from json import load
 
-AUTH_TOKEN_PATH = "../auth_key.json"
+auth_token_path = "../auth_key.json"
 
 
 def get_auth_key():
-    with open(AUTH_TOKEN_PATH, "r") as f:
+    with open(auth_token_path, "r") as f:
         key = load(f)
     return key["auth_key"]
 
@@ -23,32 +23,55 @@ auth_token = get_auth_key()
 
 
 
-model_name = "en-st-lg-40"
+
 
 max_input_length = 128
 max_target_length = 128
 
 
-
-
+dataset_name = "cw1521/en-st"
+model_name = "en-st-lg-40"
 model_checkpoint = "cw1521/en-st-lg-30"
 
 
 
+def get_dataset(name):
+    train, valid = get_datafiles()
+    return load_dataset(    
+        name,
+        data_files={'train':train, 'valid':valid},
+        use_auth_token=auth_token,
+        field="data"
+    )
 
-train = ['oracle-train1.json','oracle-train2.json','oracle-train3.json','oracle-train4.json','oracle-train5.json','oracle-train6.json','oracle-train7.json','oracle-train8.json','oracle-train9.json','oracle-train10.json']
-valid = ['oracle-valid.json']
+def get_datafiles():
+    train = [
+    'oracle-train1.json',
+    'oracle-train2.json',
+    'oracle-train3.json',
+    'oracle-train4.json',
+    'oracle-train5.json',
+    'oracle-train6.json',
+    'oracle-train7.json',
+    'oracle-train8.json',
+    'oracle-train9.json',
+    'oracle-train10.json'
+    ]   
 
-raw_data = load_dataset("cw1521/en-st", data_files={'train':train, 'valid':valid}, use_auth_token=auth_token, field="data")
+    valid = ['oracle-valid.json']
+    return train, valid
+
+
+raw_data = get_dataset(dataset_name)
 
 
 metric = load_metric("sacrebleu")
 
-tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, use_auth_token=auth_token)
+tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 
 
 
-model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint, use_auth_token=auth_token)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)
 data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 
 
@@ -66,12 +89,13 @@ tokenized_data = raw_data.map(
     preprocess_function, batched=True, remove_columns=["input", "target"]
 )
 
+
+
 def get_training_args(num_epochs):
     train_batch_size = 64
     eval_batch_size = 64
     args = Seq2SeqTrainingArguments(
         model_name,
-        # push_to_hub=True,
         save_steps=50,
         evaluation_strategy = "epoch",
         learning_rate=2e-5,
@@ -81,7 +105,6 @@ def get_training_args(num_epochs):
         save_total_limit=3,
         num_train_epochs=num_epochs,
         predict_with_generate=True,
-        hub_token=auth_token,
         logging_dir='./logs',
 	gradient_accumulation_steps=4,
     	gradient_checkpointing=True,

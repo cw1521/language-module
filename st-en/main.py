@@ -7,33 +7,68 @@ import numpy as np
 from transformers import Seq2SeqTrainer
 from json import load
 
-AUTH_TOKEN_PATH = "../auth_key.json"
+
+auth_token_path = "../auth_key.json"
 
 
 def get_auth_key():
-    with open(AUTH_TOKEN_PATH, "r") as f:
+    with open(auth_token_path, "r") as f:
         key = load(f)
     return key["auth_key"]
+
+
 
 
 auth_token = get_auth_key()
 
 
 
-model_name = "st-en-lg-40"
 
 max_input_length = 128
 max_target_length = 128
 
-
+dataset_name = "cw1521/en-st"
+model_name = "st-en-lg-40"
 model_checkpoint = "cw1521/st-en-lg-30"
 
 
-train = ['oracle-train1.json','oracle-train2.json','oracle-train3.json','oracle-train4.json','oracle-train5.json','oracle-train6.json','oracle-train7.json','oracle-train8.json','oracle-train9.json','oracle-train10.json']
-valid = ['oracle-valid.json']
 
-raw_data = load_dataset("cw1521/en-st", data_files={'train':train, 'valid':valid}, use_auth_token=auth_token, field="data")
 
+def get_dataset(name):
+    train, valid = get_datafiles()
+    return load_dataset(    
+        name,
+        data_files={'train':train, 'valid':valid},
+        use_auth_token=auth_token,
+        field="data"
+    )
+
+
+
+
+def get_datafiles():
+    train = [
+    'oracle-train1.json',
+    'oracle-train2.json',
+    'oracle-train3.json',
+    'oracle-train4.json',
+    'oracle-train5.json',
+    'oracle-train6.json',
+    'oracle-train7.json',
+    'oracle-train8.json',
+    'oracle-train9.json',
+    'oracle-train10.json'
+    ]   
+
+    valid = ['oracle-valid.json']
+    return train, valid
+
+
+
+
+
+
+raw_data = get_dataset(dataset_name)
 
 metric = load_metric("sacrebleu")
 
