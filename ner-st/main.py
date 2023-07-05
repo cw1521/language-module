@@ -10,7 +10,7 @@ from os import getcwd
 
 
 
-auth_token_path = f"{getcwd()}/auth_key.json"
+auth_token_path = f"{getcwd()}\\auth_key.json"
 
 
 def get_auth_key():
@@ -32,9 +32,6 @@ max_target_length = 128
 dataset_name = "cw1521/en-st-ner-small"
 model_name = "ner-st-sm-10"
 model_checkpoint = "cw1521/opus-mt-en-st"
-
-
-
 
 
 
@@ -182,4 +179,4 @@ def get_trainer(num_epochs):
 trainer = get_trainer(10)
 
 trainer.train()
-model.save_pretrained(getcwd()+model_name)
+model.save_pretrained()

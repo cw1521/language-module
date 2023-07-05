@@ -11,7 +11,7 @@ from os import getcwd
 
 
 
-auth_token_path = f"{getcwd()}/auth_key.json"
+auth_token_path = f"{getcwd()}\\auth_key.json"
 
 
 def get_auth_key():
@@ -27,8 +27,6 @@ auth_token = get_auth_key()
 
 
 
-
-
 max_input_length = 128
 max_target_length = 128
 
@@ -36,7 +34,6 @@ max_target_length = 128
 dataset_name = "cw1521/en-st"
 model_name = "en-st-lg-40"
 model_checkpoint = "cw1521/en-st-lg-30"
-
 
 
 def get_dataset(name):
@@ -47,6 +44,8 @@ def get_dataset(name):
         use_auth_token=auth_token,
         field="data"
     )
+
+
 
 def get_datafiles():
     train = [
@@ -179,4 +178,4 @@ def get_trainer(num_epochs):
 trainer = get_trainer(10)
 
 trainer.train()
-model.save_pretrained(getcwd()+model_name)
+model.save_pretrained()
