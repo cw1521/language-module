@@ -21,8 +21,6 @@ def get_auth_key():
 
 
 
-
-
 auth_token = get_auth_key()
 
 
@@ -34,6 +32,18 @@ max_target_length = 128
 dataset_name = "cw1521/en-st"
 model_name = "en-st-lg-40"
 model_checkpoint = "cw1521/en-st-lg-30"
+
+
+
+
+
+output_path = f"{getcwd()}\\output\\{model_name}"
+
+
+
+
+
+
 
 
 def get_dataset(name):
@@ -109,16 +119,15 @@ tokenized_data = raw_data.map(
 
 
 def get_training_args(num_epochs):
-    train_batch_size = 64
-    eval_batch_size = 64
+    batch_size = 64
     args = Seq2SeqTrainingArguments(
         model_name,
         save_steps=50,
         evaluation_strategy = "epoch",
-        learning_rate=2e-5,
-        per_device_train_batch_size=train_batch_size,
-        per_device_eval_batch_size=eval_batch_size,
-        weight_decay=0.01,
+        learning_rate=1e-5,
+        per_device_train_batch_size=batch_size,
+        per_device_eval_batch_size=batch_size,
+        weight_decay=1e-5,
         save_total_limit=3,
         num_train_epochs=num_epochs,
         predict_with_generate=True,
@@ -178,4 +187,4 @@ def get_trainer(num_epochs):
 trainer = get_trainer(10)
 
 trainer.train()
-model.save_pretrained()
+model.save_model(output_path)
