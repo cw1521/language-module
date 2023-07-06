@@ -34,23 +34,23 @@ def get_training_vars(args):
 
     for arg in args:
         arg_list = arg.split("=")
-        # print(arg_list)
-        if arg_list[0] == "--task":
-            task = arg_list[1]
-        elif arg_list[0] == "--model_checkpoint":
-            model_checkpoint = arg_list[1]
-        elif arg_list[0] == "--dataset_name":
-            dataset_name = arg_list[1]
-        elif arg_list[0] == "--model_name":
-            model_name = arg_list[1]
-        elif arg_list[0] == "--mode":
-            if arg_list[1] == "test":
-                test = True
-        elif arg_list[0] == "--num_epochs":
-            try:
-                num_epochs = int(arg_list[1])
-            except:
-                print(f"Error: Cant convert {args[1]} to int.")
+        match arg_list[0]:
+            case "--task":
+                task = arg_list[1]
+            case "--model_checkpoint":
+                model_checkpoint = arg_list[1]
+            case "--dataset_name":
+                dataset_name = arg_list[1]
+            case "--model_name":
+                model_name = arg_list[1]
+            case "--mode":
+                if arg_list[1] == "test":
+                    test = True
+            case "--num_epochs":
+                try:
+                    num_epochs = int(arg_list[1])
+                except:
+                    print(f"Error: Cant convert {args[1]} to int.")
 
     assert(task != None)
     assert(model_checkpoint != None)
@@ -77,12 +77,10 @@ def is_arg_help(args):
 
 def main():
     home_path = path.dirname(path.abspath(sys.argv[0]))
-
+    
     auth_token_path = f"{home_path}\\language-module\\assets\\auth_token.json"
     data_files_path = f"{home_path}\\language-module\\assets\\data_files.json"
     label_list_path = f"{home_path}\\language-module\\assets\\label_list.json"
-    
-
 
     args = sys.argv[1:]
 
@@ -103,74 +101,76 @@ def main():
 
         assert(data_files != None)
 
-        if task == "nl-ner":
-            assert(label_list != None)            
-            input = "sentence"
-            target = "ner_tags"
-            controller = NERTrainer(
-                model_checkpoint,
-                dataset_name,
-                model_name,
-                auth_token,
-                data_files,
-                label_list,
-                input,
-                target,
-                test,
-                num_epochs
-            )
-            controller.train()
 
-        elif task == "ner-st":
-            input = "ner_sentence"
-            target = "state"
-            controller = TranslationTrainer(
-                model_checkpoint,
-                dataset_name,
-                model_name,
-                auth_token,
-                data_files,
-                input,
-                target,
-                test,
-                num_epochs
-            )
-            controller.train()
+        match task:
+            case "nl-ner":
+                assert(label_list != None)            
+                input = "sentence"
+                target = "ner_tags"
+                controller = NERTrainer(
+                    model_checkpoint,
+                    dataset_name,
+                    model_name,
+                    auth_token,
+                    data_files,
+                    label_list,
+                    input,
+                    target,
+                    test,
+                    num_epochs
+                )
+                controller.train()
 
-        elif task == "en-st":
-            input = "target"
-            target = "input"
-            controller = TranslationTrainer(
-                model_checkpoint,
-                dataset_name,
-                model_name,
-                auth_token,
-                data_files,
-                input,
-                target,
-                test,
-                num_epochs
-            )
-            controller.train()
+            case "ner-st":
+                input = "ner_sentence"
+                target = "state"
+                controller = TranslationTrainer(
+                    model_checkpoint,
+                    dataset_name,
+                    model_name,
+                    auth_token,
+                    data_files,
+                    input,
+                    target,
+                    test,
+                    num_epochs
+                )
+                controller.train()
 
-        elif task == "st-en":
-            input = "input"
-            target = "target"
-            controller = TranslationTrainer(
-                model_checkpoint,
-                dataset_name,
-                model_name,
-                auth_token,
-                data_files,
-                input,
-                target,
-                test,
-                num_epochs
-            )
-            controller.train()
-        
-        else:
-            print("Task currently unsupported.")
+            case "en-st":
+                input = "target"
+                target = "input"
+                controller = TranslationTrainer(
+                    model_checkpoint,
+                    dataset_name,
+                    model_name,
+                    auth_token,
+                    data_files,
+                    input,
+                    target,
+                    test,
+                    num_epochs
+                )
+                controller.train()
+
+            case "st-en":
+                input = "input"
+                target = "target"
+                controller = TranslationTrainer(
+                    model_checkpoint,
+                    dataset_name,
+                    model_name,
+                    auth_token,
+                    data_files,
+                    input,
+                    target,
+                    test,
+                    num_epochs
+                )
+                controller.train()
+            
+            case _:
+                print("Task currently unsupported.")
     
 
 
