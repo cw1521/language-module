@@ -5,15 +5,13 @@ from transformers import DataCollatorForSeq2Seq, AutoModelForSeq2SeqLM
 from transformers import Seq2SeqTrainingArguments
 import numpy as np
 from transformers import Seq2SeqTrainer
-from json import load
-from os import getcwd
 
 
 
 
 
 class TranslationTrainer:
-    auth_token_path = f"{getcwd()}\\language-module\\auth_key.json"
+
 
     def __init__(
             self,

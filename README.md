@@ -1,5 +1,7 @@
 # Language-Module
-Python 3.10 required<br>
+Python 3.10 required<br><br>
+To install the required packages:<br>
+pip install transformers datasets numpy seqeval sacrebleu<br><br>
 This program trains transformers using the HuggingFace API<br><br>
 st-en: Translation task<br>
 en-st: Translation task<br>
