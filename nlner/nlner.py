@@ -17,7 +17,7 @@ class NlNer:
         self.auth_token = self.get_auth_key(self.auth_token_path)
         self.output_path = f"{getcwd()}\\output\\{self.model_name}"
         self.dataset = self.get_dataset(self.dataset_name)
-        self.label_list = self.get_label_list()                
+        self.label_list = self.get_label_list()               
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
         self.model = AutoModelForTokenClassification.from_pretrained(
             self.model_checkpoint,
@@ -31,9 +31,8 @@ class NlNer:
 
     def train(self):
         self.trainer.train()
-        self.trainer.save_model()
+        self.trainer.save_model(f"output\\{self.model_name}")
         self.trainer.save_state()
-
 
 
 
@@ -168,22 +167,20 @@ class NlNer:
         )
         return args
 
+    def compute_metrics(self, p):
+        metric = load_metric("seqeval")
+        predictions, labels = p
+        predictions = np.argmax(predictions, axis=2)
+
+        true_predictions = [[self.label_list[p] for (p, l) in zip(prediction, label) if l != -100] for prediction, label in zip(predictions, labels)]
+        true_labels = [[self.label_list[l] for (p, l) in zip(prediction, label) if l != -100] for prediction, label in zip(predictions, labels)]
+
+        results = metric.compute(predictions=true_predictions, references=true_labels)
+        return {"precision": results["overall_precision"], "recall": results["overall_recall"], "f1": results["overall_f1"], "accuracy": results["overall_accuracy"]}
 
 
 
     def get_trainer(self, num_epochs):
-        
-        def compute_metrics(p):
-            metric = load_metric("seqeval")
-            predictions, labels = p
-            predictions = np.argmax(predictions, axis=2)
-
-            true_predictions = [[self.label_list[p] for (p, l) in zip(prediction, label) if l != -100] for prediction, label in zip(predictions, labels)]
-            true_labels = [[self.label_list[l] for (p, l) in zip(prediction, label) if l != -100] for prediction, label in zip(predictions, labels)]
-
-            results = metric.compute(predictions=true_predictions, references=true_labels)
-            return {"precision": results["overall_precision"], "recall": results["overall_recall"], "f1": results["overall_f1"], "accuracy": results["overall_accuracy"]}
-
         train, valid = self.get_tokenized_datasets()
         args = self.get_training_args(num_epochs)
         trainer = Trainer(
@@ -193,7 +190,7 @@ class NlNer:
             eval_dataset=valid,
             data_collator=self.data_collator,
             tokenizer=self.tokenizer,
-            compute_metrics=compute_metrics
+            compute_metrics=self.compute_metrics
         )
 
         return trainer

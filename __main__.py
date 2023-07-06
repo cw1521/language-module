@@ -1,6 +1,6 @@
 import sys
 from nlner.nlner import NlNer
-
+from translation.translation_trainer import TranslationTrainer
 
 
 def get_help():
@@ -87,6 +87,21 @@ def main():
                 num_epochs
             )
             controller.train()
+
+        elif task == "ner-st":
+            input = "ner_sentence"
+            target = "state"
+            controller = TranslationTrainer(
+                model_checkpoint,
+                dataset_name,
+                model_name,
+                num_epochs,
+                input,
+                target
+            )
+            controller.train()
+
+        
         else:
             print("Task currently unsupported.")
     

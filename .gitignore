@@ -5,3 +5,4 @@ nl-ner-*
 auth_key.json
 args_cheatsheet.txt
 commands.txt
+__pycache__
