@@ -1,6 +1,6 @@
 import sys
-from nlner.nlner import NlNer
-from translation.translation_trainer import TranslationTrainer
+from ner.nlner import NlNer
+from translation.trainer import TranslationTrainer
 
 
 def get_help():
@@ -101,6 +101,31 @@ def main():
             )
             controller.train()
 
+        elif task == "en-st":
+            input = "target"
+            target = "input"
+            controller = TranslationTrainer(
+                model_checkpoint,
+                dataset_name,
+                model_name,
+                num_epochs,
+                input,
+                target
+            )
+            controller.train()
+
+        elif task == "st-en":
+            input = "input"
+            target = "target"
+            controller = TranslationTrainer(
+                model_checkpoint,
+                dataset_name,
+                model_name,
+                num_epochs,
+                input,
+                target
+            )
+            controller.train()
         
         else:
             print("Task currently unsupported.")
