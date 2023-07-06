@@ -5,7 +5,7 @@ from os import getcwd
 from json import load
 
 
-auth_token_path = f"{getcwd()}\\language-module\\resources\\auth_token.json"
+auth_token_path = f"{getcwd()}\\language-module\\auth_token.json"
 data_files_path = f"{getcwd()}\\language-module\\resources\\data_files.json"
 label_list_path = f"{getcwd()}\\language-module\\resources\\label_list.json"
 
