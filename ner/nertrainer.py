@@ -5,8 +5,10 @@ import numpy as np
 
 
 
-class NlNerTrainer:
 
+class NERTrainer:
+    
+    test = True
 
     def __init__(
             self,
@@ -16,24 +18,29 @@ class NlNerTrainer:
             auth_token,
             data_files,
             label_list,
+            input,
+            target,
             num_epochs
         ):
         
+
         self.model_checkpoint = model_checkpoint
         self.dataset_name = dataset_name
         self.model_name = model_name
         self.data_files = data_files
         self.auth_token = auth_token
-        self.dataset = self.get_dataset(self.dataset_name)
-        self.label_list = label_list               
+        self.input = input
+        self.target = target
+        self.label_list = label_list    
+        self.dataset = self.get_dataset()           
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
         self.model = AutoModelForTokenClassification.from_pretrained(
             self.model_checkpoint,
             num_labels=len(self.label_list)
         )
         self.data_collator = DataCollatorForTokenClassification(self.tokenizer)
-
         self.trainer = self.get_trainer(num_epochs)
+
 
 
 
@@ -44,15 +51,34 @@ class NlNerTrainer:
 
 
 
-    def get_dataset(self, name):
+    def get_dataset(self):
         train = self.data_files["train"]
         valid = self.data_files["valid"]
-        return load_dataset(    
-            name,
+        dataset = load_dataset(    
+            self.dataset_name,
             data_files={"train":train, "valid":valid},
             use_auth_token=self.auth_token,
             field="data"
-        )
+        )             
+        if self.test:
+            dataset["train"] = dataset["train"].shard(10, 0)
+            dataset["valid"] = dataset["valid"].shard(10, 0)
+        return dataset
+
+
+
+
+    def get_tokenized_datasets(self):
+            def tokenize_and_align_labels(examples):
+                tokenized_inputs = self.tokenizer(examples[self.input], truncation=True)
+                tokenized_inputs["labels"] = examples[self.target]
+                return tokenized_inputs
+
+            tokenized_data = self.dataset.map(tokenize_and_align_labels, batched=True)
+            train = tokenized_data["train"]
+            valid = tokenized_data["valid"]
+            return train, valid
+
 
 
 
@@ -74,6 +100,7 @@ class NlNerTrainer:
         )
         return args
 
+
     def compute_metrics(self, p):
         metric = load_metric("seqeval")
         predictions, labels = p
@@ -86,10 +113,10 @@ class NlNerTrainer:
         return {"precision": results["overall_precision"], "recall": results["overall_recall"], "f1": results["overall_f1"], "accuracy": results["overall_accuracy"]}
 
 
-
     def get_trainer(self, num_epochs):
         train, valid = self.get_tokenized_datasets()
         args = self.get_training_args(num_epochs)
+
         trainer = Trainer(
             self.model,
             args,
@@ -102,18 +129,6 @@ class NlNerTrainer:
 
         return trainer
 
-
-
-
-    def get_tokenized_datasets(self):
-        def tokenize_and_align_labels(examples):
-            tokenized_inputs = self.tokenizer(examples["sentence"], truncation=True)
-            tokenized_inputs["labels"] = examples["ner_tags"]
-            return tokenized_inputs
-        train = self.dataset["train"].map(tokenize_and_align_labels, batched=True)
-        valid = self.dataset["valid"].map(tokenize_and_align_labels, batched=True)
-
-        return train, valid
 
 
 
