@@ -188,7 +188,7 @@ def compute_metrics(p):
 #########################################################
 # Trainer Arguments and Trainer
 def get_training_args(num_epochs):
-    batch_size = 64
+    batch_size = 128
     args = TrainingArguments(
         model_name,
         save_steps=50,
@@ -226,7 +226,6 @@ trainer = Trainer(
 #########################################################
 # Train, Evaluate, Save Model
 trainer.train()
-trainer.evaluate()
 trainer.save_model()
-
+trainer.save_state()
 

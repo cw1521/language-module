@@ -190,3 +190,4 @@ trainer = get_trainer(10)
 
 trainer.train()
 model.save_model(output_path)
+trainer.save_state()
