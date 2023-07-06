@@ -12,6 +12,7 @@ from transformers import Seq2SeqTrainer
 
 class TranslationTrainer:
 
+    test = True
 
     def __init__(
             self,
@@ -20,9 +21,9 @@ class TranslationTrainer:
             model_name,
             auth_token,
             data_files,
-            num_epochs,
             input,
-            target
+            target,
+            num_epochs
         ):
 
 
@@ -33,6 +34,7 @@ class TranslationTrainer:
         self.data_files = data_files
         self.input = input
         self.target = target
+        self.dataset = self.get_dataset()  
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_checkpoint)
         self.data_collator = DataCollatorForSeq2Seq(self.tokenizer, model=self.model)
@@ -47,19 +49,23 @@ class TranslationTrainer:
 
 
 
-    def get_dataset(self, name):
+    def get_dataset(self):
         train = self.data_files["train"]
         valid = self.data_files["valid"]
-        return load_dataset(    
-            name,
+        dataset = load_dataset(    
+            self.dataset_name,
             data_files={"train":train, "valid":valid},
             use_auth_token=self.auth_token,
             field="data"
-        )
+        )             
+        if self.test:
+            dataset["train"] = dataset["train"].shard(10, 0)
+            dataset["valid"] = dataset["valid"].shard(10, 0)
+        return dataset
 
 
 
-    def get_tokenized_data(self):                
+    def get_tokenized_dataset(self):                
         def preprocess_function(examples):
             max_input_length = 128
             max_target_length = 128
@@ -77,13 +83,16 @@ class TranslationTrainer:
                 )
             model_inputs["labels"] = labels["input_ids"]
             return model_inputs
-        
-        raw_data = self.get_dataset(self.dataset_name)        
-        tokenized_data = raw_data.map(
-            preprocess_function, batched=True, remove_columns=[self.input, self.target]
+     
+        tokenized_data = self.dataset.map(
+            preprocess_function,
+            batched=True,
+            remove_columns=[self.input, self.target]
         )
 
-        return tokenized_data
+        train = tokenized_data["train"]
+        valid = tokenized_data["valid"]
+        return train, valid
 
 
 
@@ -108,46 +117,44 @@ class TranslationTrainer:
         return args
 
 
-
+        
     def postprocess_text(self, preds, labels):
         preds = [pred.strip() for pred in preds]
         labels = [[label.strip()] for label in labels]
         return preds, labels
 
-
+    def compute_metrics(self, eval_preds):
+        metric = load_metric("sacrebleu")
+        preds, labels = eval_preds
+        if isinstance(preds, tuple):
+            preds = preds[0]
+        decoded_preds = self.tokenizer.batch_decode(preds, skip_special_tokens=True)
+        # Replace -100 in the labels as we can't decode them.
+        labels = np.where(labels != -100, labels, self.tokenizer.pad_token_id)
+        decoded_labels = self.tokenizer.batch_decode(labels, skip_special_tokens=True)
+        # Some simple post-processing
+        decoded_preds, decoded_labels = self.postprocess_text(decoded_preds, decoded_labels)
+        result = metric.compute(predictions=decoded_preds, references=decoded_labels)
+        result = {"bleu": result["score"]}
+        prediction_lens = [np.count_nonzero(pred != self.tokenizer.pad_token_id) for pred in preds]
+        result["gen_len"] = np.mean(prediction_lens)
+        result = {k: round(v, 4) for k, v in result.items()}
+        return result
 
 
     def get_trainer(self, num_epochs):
 
-        def compute_metrics(eval_preds):
-            metric = load_metric("sacrebleu")
-            preds, labels = eval_preds
-            if isinstance(preds, tuple):
-                preds = preds[0]
-            decoded_preds = self.tokenizer.batch_decode(preds, skip_special_tokens=True)
-            # Replace -100 in the labels as we can't decode them.
-            labels = np.where(labels != -100, labels, self.tokenizer.pad_token_id)
-            decoded_labels = self.tokenizer.batch_decode(labels, skip_special_tokens=True)
-            # Some simple post-processing
-            decoded_preds, decoded_labels = self.postprocess_text(decoded_preds, decoded_labels)
-            result = metric.compute(predictions=decoded_preds, references=decoded_labels)
-            result = {"bleu": result["score"]}
-            prediction_lens = [np.count_nonzero(pred != self.tokenizer.pad_token_id) for pred in preds]
-            result["gen_len"] = np.mean(prediction_lens)
-            result = {k: round(v, 4) for k, v in result.items()}
-            return result
-
         args = self.get_training_args(num_epochs)
-        data = self.get_tokenized_data()
+        train, valid = self.get_tokenized_dataset()
 
         trainer = Seq2SeqTrainer(
             self.model,
             args,
-            train_dataset=data['train'],
-            eval_dataset=data['valid'],
+            train_dataset=train,
+            eval_dataset=valid,
             data_collator=self.data_collator,
             tokenizer=self.tokenizer,
-            compute_metrics=compute_metrics
+            compute_metrics=self.compute_metrics
         )
 
         return trainer

@@ -1,13 +1,9 @@
 import sys
-from ner.trainer import NlNerTrainer
-from translation.trainer import TranslationTrainer
-from os import getcwd
+from ner.nertrainer import NERTrainer
+from translation.translationtrainer import TranslationTrainer
+from os import path
 from json import load
 
-
-auth_token_path = f"{getcwd()}\\language-module\\auth_token.json"
-data_files_path = f"{getcwd()}\\language-module\\resources\\data_files.json"
-label_list_path = f"{getcwd()}\\language-module\\resources\\label_list.json"
 
 
 
@@ -25,9 +21,6 @@ def get_json_from_file(path):
     with open(path, "r") as f:
         obj = load(f)
     return obj
-
-
-
 
 
 
@@ -81,6 +74,15 @@ def is_arg_help(args):
 
 
 def main():
+    print(sys.argv[0])
+    home_path = path.dirname(path.abspath(sys.argv[0]))
+
+    auth_token_path = f"{home_path}\\language-module\\assets\\auth_token.json"
+    data_files_path = f"{home_path}\\language-module\\assets\\data_files.json"
+    label_list_path = f"{home_path}\\language-module\\assets\\label_list.json"
+    
+
+
     args = sys.argv[1:]
 
     if is_arg_help(args):
@@ -97,14 +99,18 @@ def main():
         data_files = get_json_from_file(data_files_path)
         label_list = get_json_from_file(label_list_path)["label_list"]
 
-        if task == "nl-ner":
-            controller = NlNerTrainer(
+        if task == "nl-ner":            
+            input = "sentence"
+            target = "ner_tags"
+            controller = NERTrainer(
                 model_checkpoint,
                 dataset_name,
                 model_name,
                 auth_token,
                 data_files,
                 label_list,
+                input,
+                target,
                 num_epochs
             )
             controller.train()
@@ -118,9 +124,9 @@ def main():
                 model_name,
                 auth_token,
                 data_files,
-                num_epochs,
                 input,
-                target
+                target,
+                num_epochs
             )
             controller.train()
 
@@ -133,9 +139,9 @@ def main():
                 model_name,
                 auth_token,
                 data_files,
-                num_epochs,
                 input,
-                target
+                target,
+                num_epochs
             )
             controller.train()
 
@@ -148,15 +154,18 @@ def main():
                 model_name,
                 auth_token,
                 data_files,
-                num_epochs,
                 input,
-                target
+                target,
+                num_epochs
             )
             controller.train()
         
         else:
             print("Task currently unsupported.")
     
+
+
+
 
 
 if __name__ == "__main__":

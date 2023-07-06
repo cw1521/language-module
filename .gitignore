@@ -2,6 +2,6 @@ en-st-*
 st-en-*
 ner-st-*
 nl-ner-*
-auth_token.json
+assets/auth_token.json
 args_cheatsheet.txt
 __pycache__
