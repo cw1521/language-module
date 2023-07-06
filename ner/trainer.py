@@ -7,7 +7,7 @@ import numpy as np
 
 
 
-class NlNer:
+class NlNerTrainer:
     auth_token_path = f"{getcwd()}\\language-module\\auth_key.json"
 
     def __init__(self, model_checkpoint, dataset_name, model_name, num_epochs):

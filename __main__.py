@@ -1,5 +1,5 @@
 import sys
-from ner.nlner import NlNer
+from ner.trainer import NlNerTrainer
 from translation.trainer import TranslationTrainer
 
 
@@ -80,7 +80,7 @@ def main():
         num_epochs =training_vars[4]
 
         if task == "nl-ner":
-            controller = NlNer(
+            controller = NlNerTrainer(
                 model_checkpoint,
                 dataset_name,
                 model_name,
