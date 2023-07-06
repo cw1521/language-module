@@ -74,7 +74,6 @@ def is_arg_help(args):
 
 
 def main():
-    print(sys.argv[0])
     home_path = path.dirname(path.abspath(sys.argv[0]))
 
     auth_token_path = f"{home_path}\\language-module\\assets\\auth_token.json"
@@ -99,7 +98,10 @@ def main():
         data_files = get_json_from_file(data_files_path)
         label_list = get_json_from_file(label_list_path)["label_list"]
 
-        if task == "nl-ner":            
+        assert(data_files != None)
+
+        if task == "nl-ner":
+            assert(label_list != None)            
             input = "sentence"
             target = "ner_tags"
             controller = NERTrainer(

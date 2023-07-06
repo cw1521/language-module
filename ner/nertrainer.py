@@ -8,7 +8,7 @@ import numpy as np
 
 class NERTrainer:
     
-    test = True
+    test = False
 
     def __init__(
             self,
@@ -69,15 +69,15 @@ class NERTrainer:
 
 
     def get_tokenized_datasets(self):
-            def tokenize_and_align_labels(examples):
-                tokenized_inputs = self.tokenizer(examples[self.input], truncation=True)
-                tokenized_inputs["labels"] = examples[self.target]
-                return tokenized_inputs
+        def tokenize_and_align_labels(examples):
+            tokenized_inputs = self.tokenizer(examples[self.input], truncation=True)
+            tokenized_inputs["labels"] = examples[self.target]
+            return tokenized_inputs
 
-            tokenized_data = self.dataset.map(tokenize_and_align_labels, batched=True)
-            train = tokenized_data["train"]
-            valid = tokenized_data["valid"]
-            return train, valid
+        tokenized_data = self.dataset.map(tokenize_and_align_labels, batched=True)
+        train = tokenized_data["train"]
+        valid = tokenized_data["valid"]
+        return train, valid
 
 
 
