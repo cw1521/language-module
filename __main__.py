@@ -1,0 +1,96 @@
+import sys
+from nlner.nlner import NlNer
+
+
+
+def get_help():
+    help_str = "Include 4 arguments when calling programming:\n--task\n--model_checkpoint\n"
+    help_str += "--dataset_name\n--model_name\n--num_epochs\nThe arguments: --task, --model_checkpoint, "
+    help_str += "--dataset_name, and --model_name are required.\n"
+    help_str += "Example: python language-module --task=ner-nl --model_checkpoint=cw1521/model "
+    help_str += "--dataset_name=cw1521/dataset --model_name=new-model"
+    return help_str
+
+
+
+
+
+
+def get_training_vars(args):
+    task = None
+    model_checkpoint = None
+    dataset_name = None
+    model_name = None
+    num_epochs = 10   
+
+    for arg in args:
+        arg_list = arg.split("=")
+        # print(arg_list)
+        if arg_list[0] == "--task":
+            task = arg_list[1]
+        elif arg_list[0] == "--model_checkpoint":
+            model_checkpoint = arg_list[1]
+        elif arg_list[0] == "--dataset_name":
+            dataset_name = arg_list[1]
+        elif arg_list[0] == "--model_name":
+            model_name = arg_list[1]
+        elif arg_list[0] == "--num_epochs":
+            try:
+                num_epochs = int(arg_list[1])
+            except:
+                print(f"Error: Cant convert {args[1]} to int.")
+
+    assert(task != None)
+    assert(model_checkpoint != None)
+    assert(dataset_name != None)
+    assert(model_name != None)
+    return task, model_checkpoint, dataset_name, model_name, num_epochs
+
+
+
+
+
+def is_arg_help(args):
+    if len(args) == 1:
+        arg = args[0]
+        if arg == "--help" or arg == "-h":
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
+
+
+
+
+def main():
+    args = sys.argv[1:]
+
+    if is_arg_help(args):
+        print(get_help())
+    else:
+        training_vars = get_training_vars(args)
+
+        task = training_vars[0]
+        model_checkpoint = training_vars[1]
+        dataset_name = training_vars[2]
+        model_name = training_vars[3]
+        num_epochs =training_vars[4]
+
+        if task == "nl-ner":
+            controller = NlNer(
+                model_checkpoint,
+                dataset_name,
+                model_name,
+                num_epochs
+            )
+            controller.train()
+        else:
+            print("Task currently unsupported.")
+    
+
+
+if __name__ == "__main__":
+    main()
