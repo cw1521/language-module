@@ -19,15 +19,16 @@ num_epochs=10 (default) <br>
 mode=test (runs a test with 10% of data and smaller batch size)
 <br><br>
 Argument list:<br>
-- --task (required), --model_checkpoint (required), --dataset_name (required), 
+* --task (required), --model_checkpoint (required), --dataset_name (required), 
 --model_name (required), --mode, --num_epochs<br><br>
 
 
 
-Example calls:<br><br>
-Test<br>
+Example calls:<br>
+* Test<br>
 `python language-module --task=nl-ner --model_checkpoint=distilbert-base-uncased --dataset_name=cw1521/en-st-ner --model_name=nl-ner-10 --num_epochs=1 --mode=test`
 <br>
-Normal<br>
+
+* Normal<br>
 `python language-module --task=nl-ner --model_checkpoint=distilbert-base-uncased --dataset_name=cw1521/en-st-ner --model_name=nl-ner-10 --num_epochs=10`
 <br>
