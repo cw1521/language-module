@@ -12,7 +12,7 @@ from transformers import Seq2SeqTrainer
 
 class TranslationTrainer:
 
-    test = True
+    test = False
 
     def __init__(
             self,
