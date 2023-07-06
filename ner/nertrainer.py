@@ -20,6 +20,7 @@ class NERTrainer:
             label_list,
             input,
             target,
+            test,
             num_epochs
         ):
         
@@ -31,7 +32,8 @@ class NERTrainer:
         self.auth_token = auth_token
         self.input = input
         self.target = target
-        self.label_list = label_list    
+        self.label_list = label_list 
+        self.test = test   
         self.dataset = self.get_dataset()           
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
         self.model = AutoModelForTokenClassification.from_pretrained(

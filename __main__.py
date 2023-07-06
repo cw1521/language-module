@@ -29,6 +29,7 @@ def get_training_vars(args):
     model_checkpoint = None
     dataset_name = None
     model_name = None
+    test = False
     num_epochs = 10   
 
     for arg in args:
@@ -52,7 +53,7 @@ def get_training_vars(args):
     assert(model_checkpoint != None)
     assert(dataset_name != None)
     assert(model_name != None)
-    return task, model_checkpoint, dataset_name, model_name, num_epochs
+    return task, model_checkpoint, dataset_name, model_name, test, num_epochs
 
 
 
@@ -93,7 +94,8 @@ def main():
         model_checkpoint = training_vars[1]
         dataset_name = training_vars[2]
         model_name = training_vars[3]
-        num_epochs =training_vars[4]
+        test = training_vars[4]
+        num_epochs =training_vars[5]
         auth_token = get_json_from_file(auth_token_path)["auth_token"]
         data_files = get_json_from_file(data_files_path)
         label_list = get_json_from_file(label_list_path)["label_list"]
@@ -113,6 +115,7 @@ def main():
                 label_list,
                 input,
                 target,
+                test,
                 num_epochs
             )
             controller.train()
@@ -128,6 +131,7 @@ def main():
                 data_files,
                 input,
                 target,
+                test,
                 num_epochs
             )
             controller.train()
@@ -143,6 +147,7 @@ def main():
                 data_files,
                 input,
                 target,
+                test,
                 num_epochs
             )
             controller.train()
@@ -158,6 +163,7 @@ def main():
                 data_files,
                 input,
                 target,
+                test,
                 num_epochs
             )
             controller.train()
