@@ -15,11 +15,24 @@ from os import getcwd
 class TranslationTrainer:
     auth_token_path = f"{getcwd()}\\language-module\\auth_key.json"
 
-    def __init__(self, model_checkpoint, dataset_name, model_name, num_epochs, input, target):
-        self.auth_token = self.get_auth_key()
+    def __init__(
+            self,
+            model_checkpoint,
+            dataset_name,
+            model_name,
+            auth_token,
+            data_files,
+            num_epochs,
+            input,
+            target
+        ):
+
+
+        self.auth_token = auth_token
         self.dataset_name = dataset_name
         self.model_name = model_name
         self.model_checkpoint = model_checkpoint
+        self.data_files = data_files
         self.input = input
         self.target = target
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
@@ -35,37 +48,13 @@ class TranslationTrainer:
         self.trainer.save_state()
 
 
-    def get_auth_key(self):
-        with open(self.auth_token_path, "r") as f:
-            key = load(f)
-        return key["auth_key"]
-
-
-    def get_datafiles(self):
-        train = [
-        'oracle-train1.json',
-        'oracle-train2.json',
-        'oracle-train3.json',
-        'oracle-train4.json',
-        'oracle-train5.json',
-        'oracle-train6.json',
-        'oracle-train7.json',
-        'oracle-train8.json',
-        'oracle-train9.json',
-        'oracle-train10.json'
-        ]   
-
-        valid = ['oracle-valid.json']
-        return train, valid
-
-
-
 
     def get_dataset(self, name):
-        train, valid = self.get_datafiles()
+        train = self.data_files["train"]
+        valid = self.data_files["valid"]
         return load_dataset(    
             name,
-            data_files={'train':train, 'valid':valid},
+            data_files={"train":train, "valid":valid},
             use_auth_token=self.auth_token,
             field="data"
         )

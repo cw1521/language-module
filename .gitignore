@@ -2,7 +2,6 @@ en-st-*
 st-en-*
 ner-st-*
 nl-ner-*
-auth_key.json
+auth_token.json
 args_cheatsheet.txt
-commands.txt
 __pycache__
