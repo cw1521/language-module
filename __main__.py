@@ -43,6 +43,9 @@ def get_training_vars(args):
             dataset_name = arg_list[1]
         elif arg_list[0] == "--model_name":
             model_name = arg_list[1]
+        elif arg_list[0] == "--mode":
+            if arg_list[1] == "test":
+                test = True
         elif arg_list[0] == "--num_epochs":
             try:
                 num_epochs = int(arg_list[1])
@@ -60,14 +63,12 @@ def get_training_vars(args):
 
 
 def is_arg_help(args):
+    flag = False
     if len(args) == 1:
         arg = args[0]
         if arg == "--help" or arg == "-h":
-            return True
-        else:
-            return False
-    else:
-        return False
+            flag = True
+    return flag
 
 
 
