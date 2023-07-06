@@ -187,5 +187,5 @@ def get_trainer(num_epochs):
 trainer = get_trainer(10)
 
 trainer.train()
-trainer.evaluate()
 model.save_model(output_path)
+trainer.save_state()
