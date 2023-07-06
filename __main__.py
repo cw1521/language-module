@@ -1,6 +1,14 @@
 import sys
 from ner.trainer import NlNerTrainer
 from translation.trainer import TranslationTrainer
+from os import getcwd
+from json import load
+
+
+auth_token_path = f"{getcwd()}\\language-module\\auth_token.json"
+data_files_path = f"{getcwd()}\\language-module\\data_files.json"
+label_list_path = f"{getcwd()}\\language-module\\label_list.json"
+
 
 
 def get_help():
@@ -10,6 +18,13 @@ def get_help():
     help_str += "Example: python language-module --task=ner-nl --model_checkpoint=cw1521/model "
     help_str += "--dataset_name=cw1521/dataset --model_name=new-model"
     return help_str
+
+
+
+def get_json_from_file(path):
+    with open(path, "r") as f:
+        obj = load(f)
+    return obj
 
 
 
@@ -78,12 +93,18 @@ def main():
         dataset_name = training_vars[2]
         model_name = training_vars[3]
         num_epochs =training_vars[4]
+        auth_token = get_json_from_file(auth_token_path)["auth_token"]
+        data_files = get_json_from_file(data_files_path)
+        label_list = get_json_from_file(label_list_path)["label_list"]
 
         if task == "nl-ner":
             controller = NlNerTrainer(
                 model_checkpoint,
                 dataset_name,
                 model_name,
+                auth_token,
+                data_files,
+                label_list,
                 num_epochs
             )
             controller.train()
@@ -95,6 +116,8 @@ def main():
                 model_checkpoint,
                 dataset_name,
                 model_name,
+                auth_token,
+                data_files,
                 num_epochs,
                 input,
                 target
@@ -108,6 +131,8 @@ def main():
                 model_checkpoint,
                 dataset_name,
                 model_name,
+                auth_token,
+                data_files,
                 num_epochs,
                 input,
                 target
@@ -121,6 +146,8 @@ def main():
                 model_checkpoint,
                 dataset_name,
                 model_name,
+                auth_token,
+                data_files,
                 num_epochs,
                 input,
                 target
