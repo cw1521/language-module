@@ -19,7 +19,10 @@ num_epochs=10 (default) <br>
 mode=test (runs a test with 10% of data and smaller batch size)
 <br><br>
 Argument list:<br>
-- --task, --model_checkpoint, --dataset_name, --model_name, --mode, --num_epochs<br><br>
+- --task (required), --model_checkpoint (required), --dataset_name (required), 
+--model_name (required), --mode, --num_epochs<br><br>
+
+
 
 Example calls:<br><br>
 Test<br>
