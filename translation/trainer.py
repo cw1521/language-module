@@ -31,7 +31,7 @@ class TranslationTrainer:
 
     def train(self):
         self.trainer.train()
-        self.trainer.save_model(f"output\\{self.model_name}")
+        self.trainer.save_model()
         self.trainer.save_state()
 
 
@@ -101,7 +101,7 @@ class TranslationTrainer:
 
 
     def get_training_args(self, num_epochs):
-        batch_size = 64
+        batch_size = 32
         args = Seq2SeqTrainingArguments(
             self.model_name,
             save_steps=50,
