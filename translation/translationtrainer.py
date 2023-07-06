@@ -23,6 +23,7 @@ class TranslationTrainer:
             data_files,
             input,
             target,
+            test,
             num_epochs
         ):
 
@@ -34,6 +35,7 @@ class TranslationTrainer:
         self.data_files = data_files
         self.input = input
         self.target = target
+        self.test = test  
         self.dataset = self.get_dataset()  
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_checkpoint)
