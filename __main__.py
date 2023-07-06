@@ -9,7 +9,7 @@ from json import load
 
 def get_help():
     help_str = "Include 4 arguments when calling programming:\n--task\n--model_checkpoint\n"
-    help_str += "--dataset_name\n--model_name\n--num_epochs\nThe arguments: --task, --model_checkpoint, "
+    help_str += "--dataset_name\n--model_name\n--num_epochs\n--mode\nThe arguments: --task, --model_checkpoint, "
     help_str += "--dataset_name, and --model_name are required.\n"
     help_str += "Example: python language-module --task=ner-nl --model_checkpoint=cw1521/model "
     help_str += "--dataset_name=cw1521/dataset --model_name=new-model"
@@ -56,6 +56,7 @@ def get_training_vars(args):
     assert(model_checkpoint != None)
     assert(dataset_name != None)
     assert(model_name != None)
+
     return task, model_checkpoint, dataset_name, model_name, test, num_epochs
 
 
@@ -77,7 +78,7 @@ def is_arg_help(args):
 
 def main():
     home_path = path.dirname(path.abspath(sys.argv[0]))
-    
+
     auth_token_path = f"{home_path}\\language-module\\assets\\auth_token.json"
     data_files_path = f"{home_path}\\language-module\\assets\\data_files.json"
     label_list_path = f"{home_path}\\language-module\\assets\\label_list.json"

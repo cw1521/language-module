@@ -99,7 +99,9 @@ class TranslationTrainer:
 
 
     def get_training_args(self, num_epochs):
-        batch_size = 32
+        batch_size = 64
+        if self.test:
+            batch_size = 32
         args = Seq2SeqTrainingArguments(
             self.model_name,
             save_steps=50,
