@@ -85,7 +85,7 @@ class NERTrainer:
 
 
     def get_training_args(self, num_epochs):
-        batch_size = 128
+        batch_size = 256
         if self.test:
             batch_size = 64
         args = TrainingArguments(
