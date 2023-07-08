@@ -18,46 +18,41 @@ def get_help():
 
 
 def get_json_from_file(path):
+    obj = None
     with open(path, "r") as f:
         obj = load(f)
     return obj
 
 
 
-def get_training_vars(args):
-    task = None
-    model_checkpoint = None
-    dataset_name = None
-    model_name = None
-    test = False
-    num_epochs = 10   
+def get_arg_dict_template():
+    arg_dict = {}
+    arg_dict["task"] = None
+    arg_dict["mode"] = None
+    arg_dict["model_checkpoint"] = None
+    arg_dict["dataset_name"] = None
+    arg_dict["model_name"] = None
+    arg_dict["num_epochs"] = 10
+    return arg_dict
 
+
+def get_arg_dict(args):
+    arg_dict = get_arg_dict_template()
     for arg in args:
         arg_list = arg.split("=")
-        match arg_list[0]:
-            case "--task":
-                task = arg_list[1]
-            case "--model_checkpoint":
-                model_checkpoint = arg_list[1]
-            case "--dataset_name":
-                dataset_name = arg_list[1]
-            case "--model_name":
-                model_name = arg_list[1]
-            case "--mode":
-                if arg_list[1] == "test":
-                    test = True
-            case "--num_epochs":
-                try:
-                    num_epochs = int(arg_list[1])
-                except:
-                    print(f"Error: Cant convert {args[1]} to int.")
+        var = arg[0].replace("--", "").lower()
+        arg_dict[var] = arg_list[1]
+    return arg_dict
 
-    assert(task != None)
-    assert(model_checkpoint != None)
-    assert(dataset_name != None)
-    assert(model_name != None)
 
-    return task, model_checkpoint, dataset_name, model_name, test, num_epochs
+
+def assert_valid_args(arg_dict):
+    assert(arg_dict["task"] != None)
+    assert(arg_dict["mode"] != None)
+    assert(arg_dict["model_checkpoint"] != None)
+    assert(arg_dict["dataset_name"] != None)
+    assert(arg_dict["model_name"] != None)
+    assert(arg_dict["data_files"] != None)
 
 
 
@@ -71,6 +66,90 @@ def is_arg_help(args):
             flag = True
     return flag
 
+
+def train(arg_dict):
+    task = arg_dict["task"]
+    model_checkpoint = arg_dict["model_checkpoint"]
+    dataset_name = arg_dict["dataset_name"]
+    model_name = arg_dict["model_name"]
+    test = arg_dict["test"]
+    auth_token = arg_dict["auth_token"]
+    data_files = arg_dict["data_files"]
+    label_list = arg_dict["label_list"]
+
+    try:
+        num_epochs = int(arg_dict["num_epochs"])
+    except:
+        raise TypeError
+    match task:
+        case "nl-ner":
+            assert(label_list != None)            
+            input = "sentence"
+            target = "ner_tags"
+            controller = NERTrainer(
+                model_checkpoint,
+                dataset_name,
+                model_name,
+                auth_token,
+                data_files,
+                label_list,
+                input,
+                target,
+                test,
+                num_epochs
+            )
+            controller.train()
+
+        case "ner-st":
+            input = "ner_sentence"
+            target = "state"
+            controller = TranslationTrainer(
+                model_checkpoint,
+                dataset_name,
+                model_name,
+                auth_token,
+                data_files,
+                input,
+                target,
+                test,
+                num_epochs
+            )
+            controller.train()
+
+        case "en-st":
+            input = "target"
+            target = "input"
+            controller = TranslationTrainer(
+                model_checkpoint,
+                dataset_name,
+                model_name,
+                auth_token,
+                data_files,
+                input,
+                target,
+                test,
+                num_epochs
+            )
+            controller.train()
+
+        case "st-en":
+            input = "input"
+            target = "target"
+            controller = TranslationTrainer(
+                model_checkpoint,
+                dataset_name,
+                model_name,
+                auth_token,
+                data_files,
+                input,
+                target,
+                test,
+                num_epochs
+            )
+            controller.train()
+        
+        case _:
+            print("Task currently unsupported.")
 
 
 
@@ -88,90 +167,22 @@ def main():
     if is_arg_help(args):
         print(get_help())
     else:
-        training_vars = get_training_vars(args)
+        arg_dict = get_arg_dict(args)
+        
+        arg_dict["auth_token"] = get_json_from_file(auth_token_path)["auth_token"]
+        arg_dict["data_files"] = get_json_from_file(data_files_path)
+        arg_dict["label_list"] = get_json_from_file(label_list_path)["label_list"]
 
-        task = training_vars[0]
-        model_checkpoint = training_vars[1]
-        dataset_name = training_vars[2]
-        model_name = training_vars[3]
-        test = training_vars[4]
-        num_epochs =training_vars[5]
-        auth_token = get_json_from_file(auth_token_path)["auth_token"]
-        data_files = get_json_from_file(data_files_path)
-        label_list = get_json_from_file(label_list_path)["label_list"]
-
-        assert(data_files != None)
+        assert_valid_args(arg_dict)
 
 
-        match task:
-            case "nl-ner":
-                assert(label_list != None)            
-                input = "sentence"
-                target = "ner_tags"
-                controller = NERTrainer(
-                    model_checkpoint,
-                    dataset_name,
-                    model_name,
-                    auth_token,
-                    data_files,
-                    label_list,
-                    input,
-                    target,
-                    test,
-                    num_epochs
-                )
-                controller.train()
+        mode = arg_dict["mode"]
 
-            case "ner-st":
-                input = "ner_sentence"
-                target = "state"
-                controller = TranslationTrainer(
-                    model_checkpoint,
-                    dataset_name,
-                    model_name,
-                    auth_token,
-                    data_files,
-                    input,
-                    target,
-                    test,
-                    num_epochs
-                )
-                controller.train()
-
-            case "en-st":
-                input = "target"
-                target = "input"
-                controller = TranslationTrainer(
-                    model_checkpoint,
-                    dataset_name,
-                    model_name,
-                    auth_token,
-                    data_files,
-                    input,
-                    target,
-                    test,
-                    num_epochs
-                )
-                controller.train()
-
-            case "st-en":
-                input = "input"
-                target = "target"
-                controller = TranslationTrainer(
-                    model_checkpoint,
-                    dataset_name,
-                    model_name,
-                    auth_token,
-                    data_files,
-                    input,
-                    target,
-                    test,
-                    num_epochs
-                )
-                controller.train()
-            
-            case _:
-                print("Task currently unsupported.")
+        
+        if mode == "train":
+            train(arg_dict)
+        elif mode == "eval":
+            return
     
 
 
