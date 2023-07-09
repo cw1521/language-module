@@ -5,3 +5,4 @@ nl-ner-*
 assets/auth_token.json
 args_cheatsheet.txt
 __pycache__
+logs
