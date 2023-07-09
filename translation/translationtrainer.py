@@ -43,12 +43,10 @@ class TranslationTrainer:
         self.trainer = self.get_trainer(num_epochs)
 
 
-
     def train(self):
         self.trainer.train()
         self.trainer.save_model()
         self.trainer.save_state()
-
 
 
     def get_dataset(self):
@@ -120,7 +118,6 @@ class TranslationTrainer:
         )
         return args
 
-
         
     def postprocess_text(self, preds, labels):
         preds = [pred.strip() for pred in preds]
@@ -162,7 +159,3 @@ class TranslationTrainer:
         )
 
         return trainer
-
-
-
-
