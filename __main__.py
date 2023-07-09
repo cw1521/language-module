@@ -6,7 +6,6 @@ from json import load
 
 
 
-
 def get_help():
     help_str = "Include 4 arguments when calling programming:\n--task\n--model_checkpoint\n"
     help_str += "--dataset_name\n--model_name\n--num_epochs\n--mode\nThe arguments: --task, --model_checkpoint, "
@@ -65,6 +64,7 @@ def is_arg_help(args):
         if arg == "--help" or arg == "-h":
             flag = True
     return flag
+
 
 
 def train(arg_dict):
@@ -175,13 +175,13 @@ def main():
 
         assert_valid_args(arg_dict)
 
-
         mode = arg_dict["mode"]
-
         
         if mode == "train":
             train(arg_dict)
         elif mode == "eval":
+            return
+        elif mode == "exp":
             return
     
 

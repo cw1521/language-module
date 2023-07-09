@@ -45,12 +45,10 @@ class NERTrainer:
 
 
 
-
     def train(self):
         self.trainer.train()
         self.trainer.save_model()
         self.trainer.save_state()
-
 
 
     def get_dataset(self):
@@ -68,8 +66,6 @@ class NERTrainer:
         return dataset
 
 
-
-
     def get_tokenized_datasets(self):
         def tokenize_and_align_labels(examples):
             tokenized_inputs = self.tokenizer(examples[self.input], truncation=True)
@@ -80,8 +76,6 @@ class NERTrainer:
         train = tokenized_data["train"]
         valid = tokenized_data["valid"]
         return train, valid
-
-
 
 
     def get_training_args(self, num_epochs):
@@ -132,20 +126,4 @@ class NERTrainer:
         )
 
         return trainer
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
