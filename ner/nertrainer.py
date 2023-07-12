@@ -7,7 +7,6 @@ import numpy as np
 
 
 class NERTrainer:
-    
     test = False
 
     def __init__(
@@ -59,11 +58,9 @@ class NERTrainer:
 
 
     def get_tokenized_datasets(self):
-        
 
         def tokenize_and_align_labels(examples):
             tokenized_inputs = self.tokenizer(examples[self.input], truncation=True, is_split_into_words=True)
-
             labels = []
             for i, label in enumerate(examples[self.target]):
                 word_ids = tokenized_inputs.word_ids(batch_index=i)
@@ -81,9 +78,7 @@ class NERTrainer:
                     else:
                         label_ids.append(label[word_idx])
                     previous_word_idx = word_idx
-
                 labels.append(label_ids)
-
             tokenized_inputs["labels"] = labels
             return tokenized_inputs
 
@@ -94,10 +89,9 @@ class NERTrainer:
 
 
     def get_training_args(self, num_epochs):
-        batch_size = 64
         if self.test:
             batch_size = 8
-        args = TrainingArguments(
+            args = TrainingArguments(
             self.model_name,
             save_steps=50,
             evaluation_strategy = "epoch",
@@ -111,6 +105,22 @@ class NERTrainer:
             gradient_accumulation_steps=4,
             fp16=True
         )
+        else:
+            batch_size = 64
+            args = TrainingArguments(
+                self.model_name,
+                save_steps=50,
+                evaluation_strategy = "epoch",
+                learning_rate=1e-4,
+                per_device_train_batch_size=batch_size,
+                per_device_eval_batch_size=batch_size,
+                weight_decay=1e-5,
+                save_total_limit=3,
+                num_train_epochs=num_epochs,
+                logging_dir='./logs',
+                gradient_accumulation_steps=4,
+                tf32=True
+            )
         return args
 
 
@@ -134,6 +144,14 @@ class NERTrainer:
     def get_trainer(self, num_epochs):
         train, valid = self.get_tokenized_datasets()
         args = self.get_training_args(num_epochs)
+        train.set_format(
+            type="torch",
+            columns=["input_ids", "attention_mask", "labels"],
+                )
+        valid.set_format(
+            type="torch",
+            columns=["input_ids", "attention_mask", "labels"],
+        )
 
         trainer = Trainer(
             self.model,
@@ -144,6 +162,5 @@ class NERTrainer:
             compute_metrics=self.compute_metrics,
             data_collator=self.data_collator
         )
-
         return trainer
 

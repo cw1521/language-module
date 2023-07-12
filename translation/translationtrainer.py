@@ -11,7 +11,6 @@ from transformers import Seq2SeqTrainer
 
 
 class TranslationTrainer:
-
     test = False
 
     def __init__(
@@ -52,7 +51,6 @@ class TranslationTrainer:
         return dataset
 
 
-
     def get_tokenized_dataset(self):                
         def preprocess_function(examples):
             max_input_length = 128
@@ -81,36 +79,13 @@ class TranslationTrainer:
         train = tokenized_data["train"]
         valid = tokenized_data["validation"]
         return train, valid
-
-
-
-    def get_training_args(self, num_epochs):
-        batch_size = 64
-        if self.test:
-            batch_size = 32
-        args = Seq2SeqTrainingArguments(
-            self.model_name,
-            save_steps=50,
-            evaluation_strategy = "epoch",
-            learning_rate=1e-4,
-            per_device_train_batch_size=batch_size,
-            per_device_eval_batch_size=batch_size,
-            weight_decay=1e-5,
-            save_total_limit=3,
-            num_train_epochs=num_epochs,
-            predict_with_generate=True,
-            logging_dir='./logs',
-            gradient_accumulation_steps=4,
-            gradient_checkpointing=True,
-            tf32=True
-        )
-        return args
-
+    
         
     def postprocess_text(self, preds, labels):
         preds = [pred.strip() for pred in preds]
         labels = [[label.strip()] for label in labels]
         return preds, labels
+
 
     def compute_metrics(self, eval_preds):
         metric = load_metric("sacrebleu")
@@ -131,11 +106,58 @@ class TranslationTrainer:
         return result
 
 
-    def get_trainer(self, num_epochs):
+    def get_training_args(self, num_epochs):
+            if self.test:
+                batch_size = 32
+                args = Seq2SeqTrainingArguments(
+                self.model_name,
+                save_steps=50,
+                evaluation_strategy = "epoch",
+                learning_rate=1e-4,
+                per_device_train_batch_size=batch_size,
+                per_device_eval_batch_size=batch_size,
+                weight_decay=1e-5,
+                save_total_limit=3,
+                num_train_epochs=num_epochs,
+                predict_with_generate=True,
+                logging_dir='./logs',
+                gradient_accumulation_steps=4,
+                gradient_checkpointing=True,
+                fp16=True
+            )
+            else:    
+                batch_size = 64
+                args = Seq2SeqTrainingArguments(
+                    self.model_name,
+                    save_steps=50,
+                    evaluation_strategy = "epoch",
+                    learning_rate=1e-4,
+                    per_device_train_batch_size=batch_size,
+                    per_device_eval_batch_size=batch_size,
+                    weight_decay=1e-5,
+                    save_total_limit=3,
+                    num_train_epochs=num_epochs,
+                    predict_with_generate=True,
+                    logging_dir='./logs',
+                    gradient_accumulation_steps=4,
+                    gradient_checkpointing=True,
+                    tf32=True
+                )
+            return args
 
+
+    def get_trainer(self, num_epochs):
         args = self.get_training_args(num_epochs)
         train, valid = self.get_tokenized_dataset()
-
+        train.set_format(
+            type="torch",
+            columns=["input_ids", "attention_mask", "labels"],
+                )
+        valid.set_format(
+            type="torch",
+            columns=["input_ids", "attention_mask", "labels"],
+        )
+        
         trainer = Seq2SeqTrainer(
             self.model,
             args,
@@ -145,5 +167,4 @@ class TranslationTrainer:
             compute_metrics=self.compute_metrics,
             data_collator=self.data_collator
         )
-
         return trainer
