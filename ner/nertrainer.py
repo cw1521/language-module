@@ -1,5 +1,5 @@
 from transformers import AutoTokenizer, AutoModelForTokenClassification, TrainingArguments
-from transformers import DataCollatorForTokenClassification, Trainer
+from transformers import Trainer, DataCollatorForTokenClassification
 from datasets import load_dataset, load_metric
 import numpy as np
 
@@ -15,8 +15,6 @@ class NERTrainer:
             model_checkpoint,
             dataset_name,
             model_name,
-            auth_token,
-            data_files,
             label_list,
             input,
             target,
@@ -24,12 +22,9 @@ class NERTrainer:
             num_epochs
         ):
         
-
         self.model_checkpoint = model_checkpoint
         self.dataset_name = dataset_name
         self.model_name = model_name
-        self.data_files = data_files
-        self.auth_token = auth_token
         self.input = input
         self.target = target
         self.label_list = label_list 
@@ -40,7 +35,11 @@ class NERTrainer:
             self.model_checkpoint,
             num_labels=len(self.label_list)
         )
-        self.data_collator = DataCollatorForTokenClassification(self.tokenizer)
+        self.data_collator = DataCollatorForTokenClassification(
+            tokenizer=self.tokenizer,
+            padding='max_length',
+            max_length=512
+        )
         self.trainer = self.get_trainer(num_epochs)
 
 
@@ -52,17 +51,10 @@ class NERTrainer:
 
 
     def get_dataset(self):
-        train = self.data_files["train"]
-        valid = self.data_files["valid"]
-        dataset = load_dataset(    
-            self.dataset_name,
-            data_files={"train":train, "valid":valid},
-            use_auth_token=self.auth_token,
-            field="data"
-        )             
+        dataset = load_dataset(self.dataset_name)             
         if self.test:
             dataset["train"] = dataset["train"].shard(10, 0)
-            dataset["valid"] = dataset["valid"].shard(10, 0)
+            dataset["valid"] = dataset["validation"].shard(10, 0)
         return dataset
 
 
@@ -74,7 +66,7 @@ class NERTrainer:
 
         tokenized_data = self.dataset.map(tokenize_and_align_labels, batched=True)
         train = tokenized_data["train"]
-        valid = tokenized_data["valid"]
+        valid = tokenized_data["validation"]
         return train, valid
 
 
@@ -108,7 +100,12 @@ class NERTrainer:
         true_labels = [[self.label_list[l] for (p, l) in zip(prediction, label) if l != -100] for prediction, label in zip(predictions, labels)]
 
         results = metric.compute(predictions=true_predictions, references=true_labels)
-        return {"precision": results["overall_precision"], "recall": results["overall_recall"], "f1": results["overall_f1"], "accuracy": results["overall_accuracy"]}
+        return {
+            "precision": results["overall_precision"], 
+            "recall": results["overall_recall"],
+            "f1": results["overall_f1"],
+            "accuracy": results["overall_accuracy"]
+        }
 
 
     def get_trainer(self, num_epochs):
@@ -120,9 +117,9 @@ class NERTrainer:
             args,
             train_dataset=train,
             eval_dataset=valid,
-            data_collator=self.data_collator,
             tokenizer=self.tokenizer,
-            compute_metrics=self.compute_metrics
+            compute_metrics=self.compute_metrics,
+            data_collator=self.data_collator
         )
 
         return trainer

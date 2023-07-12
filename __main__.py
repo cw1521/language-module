@@ -39,7 +39,7 @@ def get_arg_dict(args):
     arg_dict = get_arg_dict_template()
     for arg in args:
         arg_list = arg.split("=")
-        var = arg[0].replace("--", "").lower()
+        var = arg_list[0].replace("--", "").lower()
         arg_dict[var] = arg_list[1]
     return arg_dict
 
@@ -51,7 +51,6 @@ def assert_valid_args(arg_dict):
     assert(arg_dict["model_checkpoint"] != None)
     assert(arg_dict["dataset_name"] != None)
     assert(arg_dict["model_name"] != None)
-    assert(arg_dict["data_files"] != None)
 
 
 
@@ -72,26 +71,23 @@ def train(arg_dict):
     model_checkpoint = arg_dict["model_checkpoint"]
     dataset_name = arg_dict["dataset_name"]
     model_name = arg_dict["model_name"]
-    test = arg_dict["test"]
-    auth_token = arg_dict["auth_token"]
-    data_files = arg_dict["data_files"]
+    test = arg_dict["mode"]
     label_list = arg_dict["label_list"]
 
     try:
         num_epochs = int(arg_dict["num_epochs"])
     except:
         raise TypeError
+    
     match task:
         case "nl-ner":
             assert(label_list != None)            
-            input = "sentence"
-            target = "ner_tags"
+            input = "tokens"
+            target = "ner_ids"
             controller = NERTrainer(
                 model_checkpoint,
                 dataset_name,
                 model_name,
-                auth_token,
-                data_files,
                 label_list,
                 input,
                 target,
@@ -107,8 +103,6 @@ def train(arg_dict):
                 model_checkpoint,
                 dataset_name,
                 model_name,
-                auth_token,
-                data_files,
                 input,
                 target,
                 test,
@@ -117,14 +111,12 @@ def train(arg_dict):
             controller.train()
 
         case "en-st":
-            input = "target"
-            target = "input"
+            input = "sentence"
+            target = "state"
             controller = TranslationTrainer(
                 model_checkpoint,
                 dataset_name,
                 model_name,
-                auth_token,
-                data_files,
                 input,
                 target,
                 test,
@@ -133,14 +125,12 @@ def train(arg_dict):
             controller.train()
 
         case "st-en":
-            input = "input"
-            target = "target"
+            input = "state"
+            target = "sentence"
             controller = TranslationTrainer(
                 model_checkpoint,
                 dataset_name,
                 model_name,
-                auth_token,
-                data_files,
                 input,
                 target,
                 test,
@@ -158,8 +148,6 @@ def train(arg_dict):
 def main():
     home_path = path.dirname(path.abspath(sys.argv[0]))
 
-    auth_token_path = f"{home_path}\\language-module\\assets\\auth_token.json"
-    data_files_path = f"{home_path}\\language-module\\assets\\data_files.json"
     label_list_path = f"{home_path}\\language-module\\assets\\label_list.json"
 
     args = sys.argv[1:]
@@ -168,16 +156,11 @@ def main():
         print(get_help())
     else:
         arg_dict = get_arg_dict(args)
-        
-        arg_dict["auth_token"] = get_json_from_file(auth_token_path)["auth_token"]
-        arg_dict["data_files"] = get_json_from_file(data_files_path)
         arg_dict["label_list"] = get_json_from_file(label_list_path)["label_list"]
-
         assert_valid_args(arg_dict)
-
         mode = arg_dict["mode"]
         
-        if mode == "train":
+        if mode == "train" or mode == "test-train":
             train(arg_dict)
         elif mode == "eval":
             return
