@@ -2,9 +2,8 @@ en-st-*
 st-en-*
 ner-st-*
 nl-ner-*
-assets/auth_token.json
 args_cheatsheet.txt
 __pycache__
 logs
-*/test-*.ipynb
 test-1
+test-ner-1
