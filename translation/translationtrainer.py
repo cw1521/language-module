@@ -1,7 +1,7 @@
 
 from datasets import load_dataset, load_metric
-from transformers import AutoTokenizer
-from transformers import DataCollatorForSeq2Seq, AutoModelForSeq2SeqLM
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import DataCollatorForSeq2Seq
 from transformers import Seq2SeqTrainingArguments
 import numpy as np
 from transformers import Seq2SeqTrainer
@@ -19,20 +19,15 @@ class TranslationTrainer:
             model_checkpoint,
             dataset_name,
             model_name,
-            auth_token,
-            data_files,
             input,
             target,
             test,
             num_epochs
         ):
 
-
-        self.auth_token = auth_token
         self.dataset_name = dataset_name
         self.model_name = model_name
         self.model_checkpoint = model_checkpoint
-        self.data_files = data_files
         self.input = input
         self.target = target
         self.test = test  
@@ -50,17 +45,10 @@ class TranslationTrainer:
 
 
     def get_dataset(self):
-        train = self.data_files["train"]
-        valid = self.data_files["valid"]
-        dataset = load_dataset(    
-            self.dataset_name,
-            data_files={"train":train, "valid":valid},
-            use_auth_token=self.auth_token,
-            field="data"
-        )             
+        dataset = load_dataset(self.dataset_name)             
         if self.test:
             dataset["train"] = dataset["train"].shard(10, 0)
-            dataset["valid"] = dataset["valid"].shard(10, 0)
+            dataset["valid"] = dataset["validation"].shard(10, 0)
         return dataset
 
 
@@ -91,7 +79,7 @@ class TranslationTrainer:
         )
 
         train = tokenized_data["train"]
-        valid = tokenized_data["valid"]
+        valid = tokenized_data["validation"]
         return train, valid
 
 
@@ -153,9 +141,9 @@ class TranslationTrainer:
             args,
             train_dataset=train,
             eval_dataset=valid,
-            data_collator=self.data_collator,
             tokenizer=self.tokenizer,
-            compute_metrics=self.compute_metrics
+            compute_metrics=self.compute_metrics,
+            data_collator=self.data_collator
         )
 
         return trainer

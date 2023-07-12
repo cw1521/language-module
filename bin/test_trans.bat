@@ -1,1 +1,1 @@
-python3 ../../language-module --task=ner-st --model_checkpoint=cw1521/opus-mt-en-st --dataset_name=cw1521/en-st-ner-small --model_name=ner-st-sm-10 --num_epochs=1 --mode=test
+python ../language-module --task=en-st --model_checkpoint=cw1521/opus-mt-en-st --dataset_name=cw1521/nl-st --model_name=test-sm-10 --num_epochs=1 --mode=test-train
