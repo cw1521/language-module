@@ -109,7 +109,7 @@ class NERTrainer:
             num_train_epochs=num_epochs,
             logging_dir='./logs',
             gradient_accumulation_steps=4,
-            tf32=True
+            fp16=True
         )
         return args
 
