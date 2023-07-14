@@ -79,67 +79,67 @@ def train(arg_dict):
     except:
         raise TypeError
     
-    match task:
-        case "nl-ner":
-            assert(label_list != None)            
-            input = "tokens"
-            target = "ner_ids"
-            controller = NERTrainer(
-                model_checkpoint,
-                dataset_name,
-                model_name,
-                label_list,
-                input,
-                target,
-                test,
-                num_epochs
-            )
-            controller.train()
+    
+    if task == "nl-ner":
+        assert(label_list != None)            
+        input = "tokens"
+        target = "ner_ids"
+        controller = NERTrainer(
+            model_checkpoint,
+            dataset_name,
+            model_name,
+            label_list,
+            input,
+            target,
+            test,
+            num_epochs
+        )
+        controller.train()
 
-        case "ner-st":
-            input = "ner_sentence"
-            target = "state"
-            controller = TranslationTrainer(
-                model_checkpoint,
-                dataset_name,
-                model_name,
-                input,
-                target,
-                test,
-                num_epochs
-            )
-            controller.train()
+    elif task == "ner-st":
+        input = "ner_sentence"
+        target = "state"
+        controller = TranslationTrainer(
+            model_checkpoint,
+            dataset_name,
+            model_name,
+            input,
+            target,
+            test,
+            num_epochs
+        )
+        controller.train()
 
-        case "en-st":
-            input = "sentence"
-            target = "state"
-            controller = TranslationTrainer(
-                model_checkpoint,
-                dataset_name,
-                model_name,
-                input,
-                target,
-                test,
-                num_epochs
-            )
-            controller.train()
+    elif task == "en-st":
+        input = "sentence"
+        target = "state"
+        controller = TranslationTrainer(
+            model_checkpoint,
+            dataset_name,
+            model_name,
+            input,
+            target,
+            test,
+            num_epochs
+        )
+        controller.train()
 
-        case "st-en":
-            input = "state"
-            target = "sentence"
-            controller = TranslationTrainer(
-                model_checkpoint,
-                dataset_name,
-                model_name,
-                input,
-                target,
-                test,
-                num_epochs
-            )
-            controller.train()
-        
-        case _:
-            print("Task currently unsupported.")
+    elif task == "st-en":
+        input = "state"
+        target = "sentence"
+        controller = TranslationTrainer(
+            model_checkpoint,
+            dataset_name,
+            model_name,
+            input,
+            target,
+            test,
+            num_epochs
+        )
+        controller.train()
+    
+    else:
+        print("Task currently unsupported.")
 
 
 
