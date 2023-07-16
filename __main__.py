@@ -16,12 +16,27 @@ def get_help():
 
 
 
-def get_json_from_file(path):
-    obj = None
-    with open(path, "r") as f:
-        obj = load(f)
-    return obj
-
+def get_label_list():
+    label_list = [
+        "O",
+        "L-DEMO",
+        "L-BA",
+        "V-BA",
+        "L-GROUND",
+        "L-BALL",
+        "L-SPEED",
+        "V-SPEED",
+        "L-DIR",
+        "V-DIR",
+        "L-BRAKE",
+        "L-STEER",
+        "V-STEER",
+        "L-THROTTLE",
+        "V-THROTTLE",
+        "L-BOOST",
+        "L-POS"
+    ]
+    return label_list
 
 
 def get_arg_dict_template():
@@ -72,7 +87,7 @@ def train(arg_dict):
     dataset_name = arg_dict["dataset_name"]
     model_name = arg_dict["model_name"]
     test = arg_dict["mode"]
-    label_list = arg_dict["label_list"]
+    
 
     try:
         num_epochs = int(arg_dict["num_epochs"])
@@ -81,6 +96,7 @@ def train(arg_dict):
     
     
     if task == "nl-ner":
+        label_list = get_label_list()
         assert(label_list != None)            
         input = "tokens"
         target = "ner_ids"
