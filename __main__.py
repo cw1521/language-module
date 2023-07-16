@@ -2,7 +2,6 @@ import sys
 from ner.nertrainer import NERTrainer
 from translation.translationtrainer import TranslationTrainer
 from os import path
-from json import load
 
 
 
@@ -163,8 +162,6 @@ def train(arg_dict):
 
 def main():
     home_path = path.dirname(path.abspath(sys.argv[0]))
-
-    label_list_path = f"{home_path}\\language-module\\assets\\label_list.json"
 
     args = sys.argv[1:]
 
