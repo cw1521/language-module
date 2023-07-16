@@ -1,7 +1,7 @@
 import sys
 from ner.nertrainer import NERTrainer
 from translation.translationtrainer import TranslationTrainer
-from os import path
+
 
 
 
@@ -161,8 +161,6 @@ def train(arg_dict):
 
 
 def main():
-    home_path = path.dirname(path.abspath(sys.argv[0]))
-
     args = sys.argv[1:]
 
     if is_arg_help(args):
