@@ -172,7 +172,6 @@ def main():
         print(get_help())
     else:
         arg_dict = get_arg_dict(args)
-        arg_dict["label_list"] = get_json_from_file(label_list_path)["label_list"]
         assert_valid_args(arg_dict)
         mode = arg_dict["mode"]
         
