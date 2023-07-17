@@ -123,7 +123,7 @@ class NERTrainer:
             fp16=True
         )
         else:
-            batch_size = 64
+            batch_size = 48
             args = TrainingArguments(
                 self.model_name,
                 save_steps=50,
