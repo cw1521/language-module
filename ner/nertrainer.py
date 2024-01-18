@@ -2,8 +2,8 @@ from transformers import AutoTokenizer, AutoModelForTokenClassification, Trainin
 from transformers import Trainer, DataCollatorForTokenClassification
 from datasets import load_dataset, load_metric
 import numpy as np
-
-
+import subprocess
+import sys
 
 
 class NERTrainer:
@@ -20,7 +20,7 @@ class NERTrainer:
             test,
             num_epochs
         ):
-        
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "seqeval"])
         self.model_checkpoint = model_checkpoint
         self.dataset_name = dataset_name
         self.model_name = model_name
@@ -123,7 +123,7 @@ class NERTrainer:
             fp16=True
         )
         else:
-            batch_size = 48
+            batch_size = 32
             args = TrainingArguments(
                 self.model_name,
                 save_steps=50,
