@@ -1,6 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForTokenClassification, TrainingArguments
 from transformers import Trainer, DataCollatorForTokenClassification
 from datasets import load_dataset, load_metric
+from evaluate import load
 import numpy as np
 import subprocess
 import sys
@@ -20,7 +21,7 @@ class NERTrainer:
             test,
             num_epochs
         ):
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "seqeval"])
+        # subprocess.check_call([sys.executable, "-m", "pip", "install", "seqeval"])
         self.model_checkpoint = model_checkpoint
         self.dataset_name = dataset_name
         self.model_name = model_name
@@ -89,7 +90,7 @@ class NERTrainer:
 
 
     def compute_metrics(self, p):
-        metric = load_metric("seqeval")
+        metric = load("seqeval")
         predictions, labels = p
         predictions = np.argmax(predictions, axis=2)
 
