@@ -1,10 +1,10 @@
 # Language-Module
 ## Requirements
-Python 3.10 required<br><br>
-To install the required packages:<br>
-pip install transformers datasets numpy seqeval sacrebleu <br>
-Install pytorch and cuda:<br>
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121<br><br>
+Anaconda 3 required
+### Installation steps
+1. Download and install Anaconda 3
+2. Navigate to the Language-Module folder
+3. Run the command `conda env create -n "name of environment" --file environment.yml`
 
 ## Usage
 This program trains transformers using the HuggingFace API<br><br>
