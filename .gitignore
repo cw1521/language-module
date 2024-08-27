@@ -5,6 +5,6 @@ nl-ner-*
 args_cheatsheet.txt
 __pycache__
 logs
-test-1
+test-trans-1
 test-ner-1
 envs
