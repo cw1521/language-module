@@ -1,6 +1,6 @@
 import sys
-from ner.nertrainer import NERTrainer
-from translation.translationtrainer import TranslationTrainer
+from .ner.nertrainer import NERTrainer
+from .translation.translationtrainer import TranslationTrainer
 
 
 
@@ -172,17 +172,17 @@ def main():
         assert_valid_args(arg_dict)
         mode = arg_dict["mode"]
         
-        if mode == "train" or mode == "test-train":
+        if mode == "train" or mode == "test":
             train(arg_dict)
         elif mode == "eval":
             return
         elif mode == "exp":
             return
-    
+    return 0
 
 
 
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
