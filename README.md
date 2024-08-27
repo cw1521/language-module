@@ -2,7 +2,7 @@
 ## Requirements
 Anaconda 3 required
 ### Installation steps
-1. Download and install Anaconda 3
+1. Download and install Anaconda 3 from https://www.anaconda.com/download/success
 2. Navigate to the Language-Module folder in command prompt
 3. Run the command `conda env create -n "name of environment" --file environment.yml` to install the environment
 4. type `conda activate "name of environment"` to use the program
