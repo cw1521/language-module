@@ -5,7 +5,9 @@ from evaluate import load
 import numpy as np
 import subprocess
 import sys
-
+# from seqeval.metrics import accuracy_score
+# from seqeval.metrics import classification_report
+# from seqeval.metrics import f1_score
 
 class NERTrainer:
     test = False
@@ -105,6 +107,28 @@ class NERTrainer:
             "accuracy": results["overall_accuracy"]
         }
 
+
+
+    
+    # def compute_metrics(self, p):
+    #     predictions, labels = p
+    #     predictions = np.argmax(predictions, axis=2)
+        
+    #     # Remove ignored index (special tokens)
+    #     true_predictions = [
+    #         [self.label_list[p] for (p, l) in zip(prediction, label) if l != -100]
+    #         for prediction, label in zip(predictions, labels)
+    #     ]
+    #     true_labels = [
+    #         [self.label_list[l] for (p, l) in zip(prediction, label) if l != -100]
+    #         for prediction, label in zip(predictions, labels)
+    #     ]
+    #     results = {
+    #         'accuracy': accuracy_score(true_labels, true_predictions),
+    #         'f1': f1_score(true_labels, true_predictions),
+    #         'classification_report': classification_report(true_labels, true_predictions)
+    #     }
+    #     return results
 
     def get_training_args(self, num_epochs):
         if self.test:
