@@ -23,6 +23,7 @@ class NERTrainer:
             test,
             num_epochs
         ):
+        # subprocess.check_call([sys.executable, "-m", "pip", "install", "seqeval"])
         self.model_checkpoint = model_checkpoint
         self.dataset_name = dataset_name
         self.model_name = model_name
