@@ -21,9 +21,10 @@ class TranslationTrainer:
             input,
             target,
             test,
-            num_epochs
+            num_epochs,
+            batch_size
         ):
-
+        self.batch_size = batch_size
         self.dataset_name = dataset_name
         self.model_name = model_name
         self.model_checkpoint = model_checkpoint
@@ -108,7 +109,10 @@ class TranslationTrainer:
 
     def get_training_args(self, num_epochs):
             if self.test:
-                batch_size = 32
+                if self.batch_size == None:
+                    batch_size = 32
+                else:
+                    batch_size = self.batch_size
                 args = Seq2SeqTrainingArguments(
                 self.model_name,
                 save_steps=50,
@@ -126,7 +130,10 @@ class TranslationTrainer:
                 fp16=True
             )
             else:    
-                batch_size = 64
+                if self.batch_size == None:
+                    batch_size = 64
+                else:
+                    batch_size = self.batch_size
                 args = Seq2SeqTrainingArguments(
                     self.model_name,
                     save_steps=50,

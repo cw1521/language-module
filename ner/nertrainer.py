@@ -21,8 +21,10 @@ class NERTrainer:
             input,
             target,
             test,
-            num_epochs
+            num_epochs,
+            batch_size
         ):
+        self.batch_size = batch_size
         self.model_checkpoint = model_checkpoint
         self.dataset_name = dataset_name
         self.model_name = model_name
@@ -108,30 +110,12 @@ class NERTrainer:
 
 
 
-    
-    # def compute_metrics(self, p):
-    #     predictions, labels = p
-    #     predictions = np.argmax(predictions, axis=2)
-        
-    #     # Remove ignored index (special tokens)
-    #     true_predictions = [
-    #         [self.label_list[p] for (p, l) in zip(prediction, label) if l != -100]
-    #         for prediction, label in zip(predictions, labels)
-    #     ]
-    #     true_labels = [
-    #         [self.label_list[l] for (p, l) in zip(prediction, label) if l != -100]
-    #         for prediction, label in zip(predictions, labels)
-    #     ]
-    #     results = {
-    #         'accuracy': accuracy_score(true_labels, true_predictions),
-    #         'f1': f1_score(true_labels, true_predictions),
-    #         'classification_report': classification_report(true_labels, true_predictions)
-    #     }
-    #     return results
-
     def get_training_args(self, num_epochs):
         if self.test:
-            batch_size = 8
+            if self.batch_size == None:
+                batch_size = 8
+            else:
+                batch_size = self.batch_size
             args = TrainingArguments(
             self.model_name,
             save_steps=50,
@@ -147,7 +131,10 @@ class NERTrainer:
             fp16=True
         )
         else:
-            batch_size = 32
+            if self.batch_size == None:
+                batch_size = 32
+            else:
+                batch_size = self.batch_size
             args = TrainingArguments(
                 self.model_name,
                 save_steps=50,
