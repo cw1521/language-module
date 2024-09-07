@@ -66,7 +66,7 @@ def assert_valid_args(arg_dict):
     assert(arg_dict["model_checkpoint"] != None)
     assert(arg_dict["dataset_name"] != None)
     assert(arg_dict["model_name"] != None)
-
+    assert(arg_dict["num_epochs"] != None)
 
 
 
@@ -86,9 +86,9 @@ def train(arg_dict):
     model_checkpoint = arg_dict["model_checkpoint"]
     dataset_name = arg_dict["dataset_name"]
     model_name = arg_dict["model_name"]
-    test = arg_dict["mode"]
-
+    test = True if arg_dict["mode"].lower() == "test" else False
     batch_size = arg_dict["batch_size"]
+
     if batch_size != None:
         try:
             batch_size = int(batch_size)
