@@ -3,6 +3,7 @@ from datasets import load_dataset, load_metric
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from transformers import DataCollatorForSeq2Seq
 from transformers import Seq2SeqTrainingArguments
+from transformers import GenerationConfig
 import numpy as np
 from transformers import Seq2SeqTrainer
 
@@ -24,6 +25,7 @@ class TranslationTrainer:
             num_epochs,
             batch_size
         ):
+        self.num_epochs = num_epochs
         self.batch_size = batch_size
         self.dataset_name = dataset_name
         self.model_name = model_name
@@ -34,8 +36,10 @@ class TranslationTrainer:
         self.dataset = self.get_dataset()  
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_checkpoint)
+        # print(f"model config: {self.model.config}")
+        # print(f"generation config: {self.model.generation_config}")
         self.data_collator = DataCollatorForSeq2Seq(self.tokenizer, model=self.model)
-        self.trainer = self.get_trainer(num_epochs)
+        self.trainer = self.get_trainer()
 
 
     def train(self):
@@ -54,8 +58,8 @@ class TranslationTrainer:
 
     def get_tokenized_dataset(self):                
         def preprocess_function(examples):
-            max_input_length = 128
-            max_target_length = 128
+            max_input_length = 512
+            max_target_length = 512
 
             model_inputs = self.tokenizer(
                 examples[self.input],
@@ -68,15 +72,17 @@ class TranslationTrainer:
                     max_length=max_target_length,
                     truncation=True
                 )
+            for label in labels["input_ids"]:
+                if len(label) == None:
+                    print(label)
             model_inputs["labels"] = labels["input_ids"]
             return model_inputs
      
         tokenized_data = self.dataset.map(
             preprocess_function,
             batched=True,
-            remove_columns=[self.input, self.target]
+            # remove_columns=[self.input, self.target]
         )
-
         train = tokenized_data["train"]
         valid = tokenized_data["validation"]
         return train, valid
@@ -90,9 +96,19 @@ class TranslationTrainer:
 
     def compute_metrics(self, eval_preds):
         metric = load_metric("sacrebleu")
+        print("\n\n\n\nhere\n\n\n\n")
         preds, labels = eval_preds
         if isinstance(preds, tuple):
             preds = preds[0]
+        if isinstance(labels, tuple):
+            labels = labels[0]
+        # for pred in preds:
+        #     if len(pred) == None:
+        #         print(pred)
+        # for label in labels:
+        #     if len(label) == None:
+        #         print(label)
+
         decoded_preds = self.tokenizer.batch_decode(preds, skip_special_tokens=True)
         # Replace -100 in the labels as we can't decode them.
         labels = np.where(labels != -100, labels, self.tokenizer.pad_token_id)
@@ -107,7 +123,7 @@ class TranslationTrainer:
         return result
 
 
-    def get_training_args(self, num_epochs):
+    def get_training_args(self):
             if self.test:
                 if self.batch_size == None:
                     batch_size = 32
@@ -122,7 +138,7 @@ class TranslationTrainer:
                 per_device_eval_batch_size=batch_size,
                 weight_decay=1e-5,
                 save_total_limit=3,
-                num_train_epochs=num_epochs,
+                num_train_epochs=self.num_epochs,
                 predict_with_generate=True,
                 logging_dir='./logs',
                 gradient_accumulation_steps=4,
@@ -143,7 +159,7 @@ class TranslationTrainer:
                     per_device_eval_batch_size=batch_size,
                     weight_decay=1e-5,
                     save_total_limit=3,
-                    num_train_epochs=num_epochs,
+                    num_train_epochs=self.num_epochs,
                     predict_with_generate=True,
                     logging_dir='./logs',
                     gradient_accumulation_steps=4,
@@ -153,13 +169,13 @@ class TranslationTrainer:
             return args
 
 
-    def get_trainer(self, num_epochs):
-        args = self.get_training_args(num_epochs)
+    def get_trainer(self):
+        args = self.get_training_args()
         train, valid = self.get_tokenized_dataset()
         train.set_format(
             type="torch",
             columns=["input_ids", "attention_mask", "labels"],
-                )
+        )
         valid.set_format(
             type="torch",
             columns=["input_ids", "attention_mask", "labels"],
