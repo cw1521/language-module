@@ -117,7 +117,7 @@ class NERTrainer:
             else:
                 batch_size = self.batch_size
             args = TrainingArguments(
-            self.model_name,
+            f"models/{self.model_name}",
             save_steps=50,
             evaluation_strategy = "epoch",
             learning_rate=1e-4,
@@ -136,7 +136,7 @@ class NERTrainer:
             else:
                 batch_size = self.batch_size
             args = TrainingArguments(
-                self.model_name,
+                f"models/{self.model_name}",
                 save_steps=50,
                 evaluation_strategy = "epoch",
                 learning_rate=1e-4,

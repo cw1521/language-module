@@ -130,7 +130,7 @@ class TranslationTrainer:
                 else:
                     batch_size = self.batch_size
                 args = Seq2SeqTrainingArguments(
-                self.model_name,
+                f"models/{self.model_name}",
                 save_steps=50,
                 evaluation_strategy = "epoch",
                 learning_rate=1e-4,
@@ -151,7 +151,7 @@ class TranslationTrainer:
                 else:
                     batch_size = self.batch_size
                 args = Seq2SeqTrainingArguments(
-                    self.model_name,
+                    f"models/{self.model_name}",
                     save_steps=50,
                     evaluation_strategy = "epoch",
                     learning_rate=1e-4,
