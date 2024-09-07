@@ -45,6 +45,7 @@ def get_arg_dict_template():
     arg_dict["model_checkpoint"] = None
     arg_dict["dataset_name"] = None
     arg_dict["model_name"] = None
+    arg_dict["batch_size"] = None
     arg_dict["num_epochs"] = 10
     return arg_dict
 
@@ -86,7 +87,13 @@ def train(arg_dict):
     dataset_name = arg_dict["dataset_name"]
     model_name = arg_dict["model_name"]
     test = arg_dict["mode"]
-    
+
+    batch_size = arg_dict["batch_size"]
+    if batch_size != None:
+        try:
+            batch_size = int(batch_size)
+        except:
+            raise TypeError
 
     try:
         num_epochs = int(arg_dict["num_epochs"])
@@ -107,7 +114,8 @@ def train(arg_dict):
             input,
             target,
             test,
-            num_epochs
+            num_epochs,
+            batch_size
         )
         controller.train()
 
@@ -123,7 +131,8 @@ def train(arg_dict):
             input,
             target,
             test,
-            num_epochs
+            num_epochs,
+            batch_size
         )
         controller.train()
 
@@ -137,7 +146,8 @@ def train(arg_dict):
             input,
             target,
             test,
-            num_epochs
+            num_epochs,
+            batch_size
         )
         controller.train()
 
@@ -151,7 +161,8 @@ def train(arg_dict):
             input,
             target,
             test,
-            num_epochs
+            num_epochs,
+            batch_size
         )
         controller.train()
     
