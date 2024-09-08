@@ -8,3 +8,6 @@ logs
 test-trans-1
 test-ner-1
 envs
+env
+.env
+.vscode
