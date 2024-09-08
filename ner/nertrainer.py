@@ -118,7 +118,7 @@ class NERTrainer:
         else:
             batch_size = self.batch_size
         args = TrainingArguments(
-        f"models/{self.model_name}",
+        f"./hf/models/{self.model_name}",
         save_steps=50,
         evaluation_strategy = "epoch",
         learning_rate=1e-4,
@@ -127,7 +127,7 @@ class NERTrainer:
         weight_decay=1e-5,
         save_total_limit=3,
         num_train_epochs=num_epochs,
-        logging_dir='./logs',
+        logging_dir='./hf/logs',
         gradient_accumulation_steps=4
         # fp16=True
         )
