@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForTokenClassification, TrainingArguments
 from transformers import Trainer, DataCollatorForTokenClassification
 from datasets import load_dataset, load_metric
-from evaluate import load
+# from evaluate import load
 import numpy as np
 import subprocess
 import sys
@@ -93,7 +93,7 @@ class NERTrainer:
 
 
     def compute_metrics(self, p):
-        metric = load("seqeval")
+        metric = load_metric("seqeval")
         predictions, labels = p
         predictions = np.argmax(predictions, axis=2)
 
@@ -107,6 +107,7 @@ class NERTrainer:
             "f1": results["overall_f1"],
             "accuracy": results["overall_accuracy"]
         }
+
 
 
 
