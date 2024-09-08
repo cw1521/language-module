@@ -3,7 +3,7 @@ from datasets import load_dataset, load_metric
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from transformers import DataCollatorForSeq2Seq
 from transformers import Seq2SeqTrainingArguments
-from transformers import GenerationConfig
+# from transformers import GenerationConfig
 import numpy as np
 from transformers import Seq2SeqTrainer
 
@@ -81,7 +81,7 @@ class TranslationTrainer:
         tokenized_data = self.dataset.map(
             preprocess_function,
             batched=True,
-            # remove_columns=[self.input, self.target]
+            remove_columns=[self.input, self.target]
         )
         train = tokenized_data["train"]
         valid = tokenized_data["validation"]
@@ -96,18 +96,9 @@ class TranslationTrainer:
 
     def compute_metrics(self, eval_preds):
         metric = load_metric("sacrebleu")
-        print("\n\n\n\nhere\n\n\n\n")
         preds, labels = eval_preds
         if isinstance(preds, tuple):
             preds = preds[0]
-        if isinstance(labels, tuple):
-            labels = labels[0]
-        # for pred in preds:
-        #     if len(pred) == None:
-        #         print(pred)
-        # for label in labels:
-        #     if len(label) == None:
-        #         print(label)
 
         decoded_preds = self.tokenizer.batch_decode(preds, skip_special_tokens=True)
         # Replace -100 in the labels as we can't decode them.
