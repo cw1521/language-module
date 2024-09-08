@@ -121,7 +121,7 @@ class TranslationTrainer:
             else:
                 batch_size = self.batch_size
             args = Seq2SeqTrainingArguments(
-            f"models/{self.model_name}",
+            f"./hf/models/{self.model_name}",
             save_steps=50,
             evaluation_strategy = "epoch",
             learning_rate=1e-4,
@@ -131,7 +131,7 @@ class TranslationTrainer:
             save_total_limit=3,
             num_train_epochs=self.num_epochs,
             predict_with_generate=True,
-            logging_dir='./logs',
+            logging_dir='./hf/logs',
             gradient_accumulation_steps=4,
             gradient_checkpointing=True
             # fp16=True
