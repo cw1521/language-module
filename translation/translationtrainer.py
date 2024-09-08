@@ -6,7 +6,7 @@ from transformers import Seq2SeqTrainingArguments
 # from transformers import GenerationConfig
 import numpy as np
 from transformers import Seq2SeqTrainer
-
+from evaluate import load
 
 
 
@@ -36,8 +36,6 @@ class TranslationTrainer:
         self.dataset = self.get_dataset()  
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_checkpoint)
-        # print(f"model config: {self.model.config}")
-        # print(f"generation config: {self.model.generation_config}")
         self.data_collator = DataCollatorForSeq2Seq(self.tokenizer, model=self.model)
         self.trainer = self.get_trainer()
 
@@ -72,9 +70,7 @@ class TranslationTrainer:
                     max_length=max_target_length,
                     truncation=True
                 )
-            for label in labels["input_ids"]:
-                if len(label) == None:
-                    print(label)
+
             model_inputs["labels"] = labels["input_ids"]
             return model_inputs
      
@@ -95,16 +91,14 @@ class TranslationTrainer:
 
 
     def compute_metrics(self, eval_preds):
-        metric = load_metric("sacrebleu")
+        metric = load("sacrebleu")
         preds, labels = eval_preds
         if isinstance(preds, tuple):
             preds = preds[0]
 
         decoded_preds = self.tokenizer.batch_decode(preds, skip_special_tokens=True)
-        # Replace -100 in the labels as we can't decode them.
         labels = np.where(labels != -100, labels, self.tokenizer.pad_token_id)
         decoded_labels = self.tokenizer.batch_decode(labels, skip_special_tokens=True)
-        # Some simple post-processing
         decoded_preds, decoded_labels = self.postprocess_text(decoded_preds, decoded_labels)
         result = metric.compute(predictions=decoded_preds, references=decoded_labels)
         result = {"bleu": result["score"]}

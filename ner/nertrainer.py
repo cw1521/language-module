@@ -71,14 +71,10 @@ class NERTrainer:
                 previous_word_idx = None
                 label_ids = []
                 for word_idx in word_ids:
-                    # Special tokens have a word id that is None. We set the label to -100 so they are automatically
-                    # ignored in the loss function.
                     if word_idx is None:
                         label_ids.append(-100)
-                    # We set the label for the first token of each word.
                     elif word_idx != previous_word_idx:
                         label_ids.append(label[word_idx])
-                    # For the other tokens in a word, we set the label to the current label
                     else:
                         label_ids.append(label[word_idx])
                     previous_word_idx = word_idx
@@ -120,7 +116,7 @@ class NERTrainer:
         args = TrainingArguments(
         f"./hf/models/{self.model_name}",
         save_steps=50,
-        evaluation_strategy = "epoch",
+        eval_strategy = "epoch",
         learning_rate=1e-4,
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
@@ -149,7 +145,7 @@ class NERTrainer:
         #         logging_dir='./logs',
         #         gradient_accumulation_steps=4,
         #         fp16=True
-        #     )
+        #)
         return args
 
 
