@@ -1,13 +1,9 @@
 
-from datasets import load_dataset, load_metric
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-from transformers import DataCollatorForSeq2Seq
-from transformers import Seq2SeqTrainingArguments
-# from transformers import GenerationConfig
-import numpy as np
-from transformers import Seq2SeqTrainer
+from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, DataCollatorForSeq2Seq
+from datasets import load_dataset
 from evaluate import load
-
+import numpy as np
 
 
 
@@ -110,7 +106,6 @@ class TranslationTrainer:
 
 
     def get_training_args(self):
-            # if self.test:
             if self.batch_size == None:
                 batch_size = 32
             else:
@@ -129,29 +124,7 @@ class TranslationTrainer:
             logging_dir='./hf/logs',
             gradient_accumulation_steps=4,
             gradient_checkpointing=True
-            # fp16=True
             )
-            # else:    
-            #     if self.batch_size == None:
-            #         batch_size = 64
-            #     else:
-            #         batch_size = self.batch_size
-            #     args = Seq2SeqTrainingArguments(
-            #         f"models/{self.model_name}",
-            #         save_steps=50,
-            #         evaluation_strategy = "epoch",
-            #         learning_rate=1e-4,
-            #         per_device_train_batch_size=batch_size,
-            #         per_device_eval_batch_size=batch_size,
-            #         weight_decay=1e-5,
-            #         save_total_limit=3,
-            #         num_train_epochs=self.num_epochs,
-            #         predict_with_generate=True,
-            #         logging_dir='./logs',
-            #         gradient_accumulation_steps=4,
-            #         gradient_checkpointing=True,
-            #         tf32=True
-            #     )
             return args
 
 

@@ -1,13 +1,10 @@
 from transformers import AutoTokenizer, AutoModelForTokenClassification, TrainingArguments
 from transformers import Trainer, DataCollatorForTokenClassification
-from datasets import load_dataset, load_metric
-# from evaluate import load
+from datasets import load_dataset
+from evaluate import load
 import numpy as np
-import subprocess
-import sys
-# from seqeval.metrics import accuracy_score
-# from seqeval.metrics import classification_report
-# from seqeval.metrics import f1_score
+
+
 
 class NERTrainer:
     test = False
@@ -30,20 +27,24 @@ class NERTrainer:
         self.model_name = model_name
         self.input = input
         self.target = target
-        self.label_list = label_list 
+        self.label_list = label_list
         self.test = test   
+        self.num_epochs = num_epochs
         self.dataset = self.get_dataset()           
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
+        id_label_map = self.get_id_label_map()
         self.model = AutoModelForTokenClassification.from_pretrained(
             self.model_checkpoint,
-            num_labels=len(self.label_list)
+            num_labels=len(self.label_list),
+            id2label=id_label_map["id2label"], 
+            label2id=id_label_map["label2id"]
         )
         self.data_collator = DataCollatorForTokenClassification(
             tokenizer=self.tokenizer,
             padding='max_length',
             max_length=512
         )
-        self.trainer = self.get_trainer(num_epochs)
+        self.trainer = self.get_trainer()
 
 
 
@@ -57,46 +58,61 @@ class NERTrainer:
         dataset = load_dataset(self.dataset_name)             
         if self.test:
             dataset["train"] = dataset["train"].shard(10, 0)
-            dataset["valid"] = dataset["validation"].shard(10, 0)
+            dataset["validation"] = dataset["validation"].shard(10, 0)
+            dataset["test"] = dataset["test"].shard(10, 0)
         return dataset
 
 
-    def get_tokenized_datasets(self):
 
+    def get_tokenized_dataset(self):
+
+        def align_labels_with_tokens(labels, word_ids):
+            new_labels = []
+            current_word = None
+            for word_id in word_ids:
+                if word_id != current_word:
+                    # Start of a new word!
+                    current_word = word_id
+                    label = -100 if word_id is None else labels[word_id]
+                    new_labels.append(label)
+                elif word_id is None:
+                    # Special token
+                    new_labels.append(-100)
+                else:
+                    # Same word as previous token
+                    label = labels[word_id]
+            return new_labels
+        
         def tokenize_and_align_labels(examples):
-            tokenized_inputs = self.tokenizer(examples[self.input], truncation=True, is_split_into_words=True)
-            labels = []
-            for i, label in enumerate(examples[self.target]):
-                word_ids = tokenized_inputs.word_ids(batch_index=i)
-                previous_word_idx = None
-                label_ids = []
-                for word_idx in word_ids:
-                    if word_idx is None:
-                        label_ids.append(-100)
-                    elif word_idx != previous_word_idx:
-                        label_ids.append(label[word_idx])
-                    else:
-                        label_ids.append(label[word_idx])
-                    previous_word_idx = word_idx
-                labels.append(label_ids)
-            tokenized_inputs["labels"] = labels
-            return tokenized_inputs
+            tokenized_inputs = self.tokenizer(
+                examples["tokens"], truncation=True, is_split_into_words=True
+            )
+            all_labels = examples["ner_ids"]
+            new_labels = []
+            for i, labels in enumerate(all_labels):
+                word_ids = tokenized_inputs.word_ids(i)
+                new_labels.append(align_labels_with_tokens(labels, word_ids))
 
-        tokenized_data = self.dataset.map(tokenize_and_align_labels, batched=True)
-        train = tokenized_data["train"]
-        valid = tokenized_data["validation"]
+            tokenized_inputs["labels"] = new_labels
+            return tokenized_inputs
+        
+        tokenized_dataset = self.dataset.map(tokenize_and_align_labels, batched=True, remove_columns=self.dataset["train"].column_names)
+        train = tokenized_dataset["train"]
+        valid = tokenized_dataset["validation"]
+
         return train, valid
+    
 
 
     def compute_metrics(self, p):
-        metric = load_metric("seqeval")
+        metric = load("seqeval")
         predictions, labels = p
         predictions = np.argmax(predictions, axis=2)
 
         true_predictions = [[self.label_list[p] for (p, l) in zip(prediction, label) if l != -100] for prediction, label in zip(predictions, labels)]
         true_labels = [[self.label_list[l] for (p, l) in zip(prediction, label) if l != -100] for prediction, label in zip(predictions, labels)]
 
-        results = metric.compute(predictions=true_predictions, references=true_labels)
+        results = metric.compute(predictions=true_predictions, references=true_labels, zero_division=0.5)
         return {
             "precision": results["overall_precision"], 
             "recall": results["overall_recall"],
@@ -105,10 +121,18 @@ class NERTrainer:
         }
 
 
+    def get_id_label_map(self):
+        id_label_map = {}
+        id2label = {i: label for i, label in enumerate(self.label_list)}
+        label2id = {v: k for k, v in id2label.items()}
+        id_label_map["id2label"] = id2label
+        id_label_map["label2id"] = label2id
+
+        return id_label_map
 
 
-    def get_training_args(self, num_epochs):
-        # if self.test:
+
+    def get_training_args(self):
         if self.batch_size == None:
             batch_size = 8
         else:
@@ -116,54 +140,36 @@ class NERTrainer:
         args = TrainingArguments(
         f"./hf/models/{self.model_name}",
         save_steps=50,
-        eval_strategy = "epoch",
-        learning_rate=1e-4,
+        evaluation_strategy = "epoch",
+        learning_rate=2e-5,
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
-        weight_decay=1e-5,
-        save_total_limit=3,
-        num_train_epochs=num_epochs,
+        weight_decay=1e-7,
+        logging_steps=50,
+        num_train_epochs=self.num_epochs,
         logging_dir='./hf/logs',
-        gradient_accumulation_steps=4
-        # fp16=True
+        gradient_accumulation_steps=4,
+        gradient_checkpointing=True,
+        save_total_limit=3
         )
-        # else:
-        #     if self.batch_size == None:
-        #         batch_size = 32
-        #     else:
-        #         batch_size = self.batch_size
-        #     args = TrainingArguments(
-        #         f"models/{self.model_name}",
-        #         save_steps=50,
-        #         evaluation_strategy = "epoch",
-        #         learning_rate=1e-4,
-        #         per_device_train_batch_size=batch_size,
-        #         per_device_eval_batch_size=batch_size,
-        #         weight_decay=1e-5,
-        #         save_total_limit=3,
-        #         num_train_epochs=num_epochs,
-        #         logging_dir='./logs',
-        #         gradient_accumulation_steps=4,
-        #         fp16=True
-        #)
         return args
 
 
-    def get_trainer(self, num_epochs):
-        train, valid = self.get_tokenized_datasets()
-        args = self.get_training_args(num_epochs)
-        train.set_format(
-            type="torch",
-            columns=["input_ids", "attention_mask", "labels"],
-                )
-        valid.set_format(
-            type="torch",
-            columns=["input_ids", "attention_mask", "labels"],
-        )
+    def get_trainer(self):
+        train, valid = self.get_tokenized_dataset()
+        args = self.get_training_args()
+        # train.set_format(
+        #     type="torch",
+        #     columns=["input_ids", "attention_mask", "labels"],
+        # )
+        # valid.set_format(
+        #     type="torch",
+        #     columns=["input_ids", "attention_mask", "labels"],
+        # )
 
         trainer = Trainer(
-            self.model,
-            args,
+            model=self.model,
+            args=args,
             train_dataset=train,
             eval_dataset=valid,
             tokenizer=self.tokenizer,

@@ -1,65 +1,21 @@
 {
-    "ner_id_map": {
-        "0": "O",
-        "1": "L-DEMO",
-        "2": "L-BA",
-        "3": "V-BA",
-        "4": "L-GROUND",
-        "5": "L-BALL",
-        "6": "L-SPEED",
-        "7": "V-SPEED",
-        "8": "L-DIR",
-        "9": "V-DIR",
-        "10": "L-BRAKE",
-        "11": "L-STEER",
-        "12": "V-STEER",
-        "13": "L-THROTTLE",
-        "14": "V-THROTTLE",
-        "15": "L-BOOST",
-        "16": "L-POS"
-    },
-
-
-
-    "ner_tag_map": {
-        "O": 0,
-        "L-DEMO": 1,
-        "L-BA": 2,
-        "V-BA": 3,
-        "L-GROUND": 4,
-        "L-BALL": 5,
-        "L-SPEED": 6,
-        "V-SPEED": 7,
-        "L-DIR": 8,
-        "V-DIR": 9,
-        "L-BRAKE": 10,
-        "L-STEER": 11,
-        "V-STEER": 12,
-        "L-THROTTLE": 13,
-        "V-THROTTLE": 14,
-        "L-BOOST": 15,
-        "L-POS": 16
-    },
-
-
-    "label_list": [
+    "label_list" : [
         "O",
-        "L-DEMO",
-        "L-BA",
-        "V-BA",
-        "L-GROUND",
-        "L-BALL",
-        "L-SPEED",
-        "V-SPEED",
-        "L-DIR",
-        "V-DIR",
-        "L-BRAKE",
-        "L-STEER",
-        "V-STEER",
-        "L-THROTTLE",
-        "V-THROTTLE",
-        "L-BOOST",
-        "L-POS"
+        "LDEMO",
+        "LB",
+        "VBA",
+        "LGROUND",
+        "LBALL",
+        "LSP",
+        "VSPEED",
+        "LD",
+        "VDIR",
+        "LBRAKE",
+        "LSTE",
+        "VSTEER",
+        "LTHROT",
+        "VTHROTTLE",
+        "LBOOST",
+        "LPOS"
     ]
-
 }

@@ -18,22 +18,22 @@ def get_help():
 def get_label_list():
     label_list = [
         "O",
-        "L-DEMO",
-        "L-BA",
-        "V-BA",
-        "L-GROUND",
-        "L-BALL",
-        "L-SPEED",
-        "V-SPEED",
-        "L-DIR",
-        "V-DIR",
-        "L-BRAKE",
-        "L-STEER",
-        "V-STEER",
-        "L-THROTTLE",
-        "V-THROTTLE",
-        "L-BOOST",
-        "L-POS"
+        "LDEMO",
+        "LB",
+        "VBA",
+        "LGROUND",
+        "LBALL",
+        "LSP",
+        "VSPEED",
+        "LD",
+        "VDIR",
+        "LBRAKE",
+        "LSTE",
+        "VSTEER",
+        "LTHROT",
+        "VTHROTTLE",
+        "LBOOST",
+        "LPOS"
     ]
     return label_list
 
