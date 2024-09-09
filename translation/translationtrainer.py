@@ -50,7 +50,8 @@ class TranslationTrainer:
         dataset = load_dataset(self.dataset_name)             
         if self.test:
             dataset["train"] = dataset["train"].shard(10, 0)
-            dataset["valid"] = dataset["validation"].shard(10, 0)
+            dataset["validation"] = dataset["validation"].shard(10, 0)
+            dataset["test"] = dataset["test"].shard(10, 0)
         return dataset
 
 
