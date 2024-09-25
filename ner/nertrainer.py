@@ -60,6 +60,10 @@ class NERTrainer:
             dataset["train"] = dataset["train"].shard(10, 0)
             dataset["validation"] = dataset["validation"].shard(10, 0)
             dataset["test"] = dataset["test"].shard(10, 0)
+        elif self.dataset_name == "cw1521/nl-st-lg":
+            dataset["train"] = dataset["train"].shard(50, 0)
+            dataset["validation"] = dataset["validation"].shard(50, 0)
+            dataset["test"] = dataset["test"].shard(50, 0)
         return dataset
 
 
@@ -158,14 +162,14 @@ class NERTrainer:
     def get_trainer(self):
         train, valid = self.get_tokenized_dataset()
         args = self.get_training_args()
-        # train.set_format(
-        #     type="torch",
-        #     columns=["input_ids", "attention_mask", "labels"],
-        # )
-        # valid.set_format(
-        #     type="torch",
-        #     columns=["input_ids", "attention_mask", "labels"],
-        # )
+        train.set_format(
+            type="torch",
+            columns=["input_ids", "attention_mask", "labels"],
+        )
+        valid.set_format(
+            type="torch",
+            columns=["input_ids", "attention_mask", "labels"],
+        )
 
         trainer = Trainer(
             model=self.model,
