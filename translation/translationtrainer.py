@@ -4,7 +4,7 @@ from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, DataCollatorF
 from datasets import load_dataset
 from evaluate import load
 import numpy as np
-
+import os
 
 
 class TranslationTrainer:
@@ -21,6 +21,7 @@ class TranslationTrainer:
             num_epochs,
             batch_size
         ):
+        self.token=os.environ['HFAT']
         self.num_epochs = num_epochs
         self.batch_size = batch_size
         self.dataset_name = dataset_name
@@ -30,8 +31,8 @@ class TranslationTrainer:
         self.target = target
         self.test = test  
         self.dataset = self.get_dataset()  
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_checkpoint)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint, token=self.token)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_checkpoint, token=self.token)
         self.data_collator = DataCollatorForSeq2Seq(self.tokenizer, model=self.model)
         self.trainer = self.get_trainer()
 
