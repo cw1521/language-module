@@ -99,7 +99,7 @@ def train(arg_dict):
         num_epochs = int(arg_dict["num_epochs"])
     except:
         raise TypeError
-    
+
     
     if task == "nl-ner":
         label_list = get_label_list()

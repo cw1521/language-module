@@ -3,7 +3,7 @@ from transformers import Trainer, DataCollatorForTokenClassification
 from datasets import load_dataset
 from evaluate import load
 import numpy as np
-
+import os
 
 
 class NERTrainer:
@@ -21,6 +21,7 @@ class NERTrainer:
             num_epochs,
             batch_size
         ):
+        self.token=os.environ['HFAT']
         self.batch_size = batch_size
         self.model_checkpoint = model_checkpoint
         self.dataset_name = dataset_name
@@ -31,10 +32,11 @@ class NERTrainer:
         self.test = test   
         self.num_epochs = num_epochs
         self.dataset = self.get_dataset()           
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_checkpoint, token=self.token)
         id_label_map = self.get_id_label_map()
         self.model = AutoModelForTokenClassification.from_pretrained(
             self.model_checkpoint,
+            token=self.token,
             num_labels=len(self.label_list),
             id2label=id_label_map["id2label"], 
             label2id=id_label_map["label2id"]
