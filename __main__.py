@@ -1,12 +1,14 @@
 import sys
+import os
 from .ner.nertrainer import NERTrainer
 from .translation.translationtrainer import TranslationTrainer
+from .experiments import perform_experiment1
 
 
 
 
 def get_help():
-    help_str = "Include 4 arguments when calling programming:\n--task\n--model_checkpoint\n"
+    help_str = "Include 5 arguments when calling for training:\n--task\n--model_checkpoint\n"
     help_str += "--dataset_name\n--model_name\n--num_epochs\n--mode\nThe arguments: --task, --model_checkpoint, "
     help_str += "--dataset_name, and --model_name are required.\n"
     help_str += "Example: python language-module --task=ner-nl --model_checkpoint=cw1521/model "
@@ -47,6 +49,11 @@ def get_arg_dict_template():
     arg_dict["model_name"] = None
     arg_dict["batch_size"] = None
     arg_dict["num_epochs"] = 10
+    arg_dict["exp"]=None
+    arg_dict["s1"]=None
+    arg_dict["r1"]=None
+    arg_dict["r2"]=None
+    arg_dict["output"]=None
     return arg_dict
 
 
@@ -60,7 +67,7 @@ def get_arg_dict(args):
 
 
 
-def assert_valid_args(arg_dict):
+def assert_valid_train_args(arg_dict):
     assert(arg_dict["task"] != None)
     assert(arg_dict["mode"] != None)
     assert(arg_dict["model_checkpoint"] != None)
@@ -81,7 +88,7 @@ def is_arg_help(args):
 
 
 
-def train(arg_dict):
+def train(arg_dict, token):
     task = arg_dict["task"]
     model_checkpoint = arg_dict["model_checkpoint"]
     dataset_name = arg_dict["dataset_name"]
@@ -115,7 +122,8 @@ def train(arg_dict):
             target,
             test,
             num_epochs,
-            batch_size
+            batch_size,
+            token
         )
         controller.train()
 
@@ -132,7 +140,8 @@ def train(arg_dict):
             target,
             test,
             num_epochs,
-            batch_size
+            batch_size,
+            token
         )
         controller.train()
 
@@ -147,7 +156,8 @@ def train(arg_dict):
             target,
             test,
             num_epochs,
-            batch_size
+            batch_size,
+            token
         )
         controller.train()
 
@@ -162,7 +172,8 @@ def train(arg_dict):
             target,
             test,
             num_epochs,
-            batch_size
+            batch_size,
+            token
         )
         controller.train()
     
@@ -171,24 +182,35 @@ def train(arg_dict):
 
 
 
+# def perform_experiment():
+
+#     if 
+
 
 
 def main():
+    hf_token = os.environ["HFAT"]
     args = sys.argv[1:]
 
     if is_arg_help(args):
         print(get_help())
     else:
         arg_dict = get_arg_dict(args)
-        assert_valid_args(arg_dict)
         mode = arg_dict["mode"]
         
         if mode == "train" or mode == "test":
-            train(arg_dict)
+            assert_valid_train_args(arg_dict)
+            train(arg_dict, hf_token)
         elif mode == "eval":
             return
         elif mode == "exp":
-            return
+            exp=arg_dict["exp"]
+            if exp == "exp1":
+                s1=arg_dict["s1"]
+                r1=arg_dict["r1"]
+                ds_name=arg_dict["dataset_name"]
+                output_file=arg_dict["output"]
+                perform_experiment1(s1, r1, ds_name, hf_token, output_file)
     return 0
 
 
@@ -196,4 +218,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

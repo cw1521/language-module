@@ -19,9 +19,10 @@ class TranslationTrainer:
             target,
             test,
             num_epochs,
-            batch_size
+            batch_size,
+            token
         ):
-        self.token=os.environ['HFAT']
+        self.token=token
         self.num_epochs = num_epochs
         self.batch_size = batch_size
         self.dataset_name = dataset_name

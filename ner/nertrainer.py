@@ -19,9 +19,10 @@ class NERTrainer:
             target,
             test,
             num_epochs,
-            batch_size
+            batch_size,
+            token
         ):
-        self.token=os.environ['HFAT']
+        self.token=token
         self.batch_size = batch_size
         self.model_checkpoint = model_checkpoint
         self.dataset_name = dataset_name
