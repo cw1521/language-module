@@ -4,10 +4,12 @@ ner-st-*
 nl-ner-*
 args_cheatsheet.txt
 __pycache__
-logs
+
 test-trans-1
 test-ner-1
 envs
 env
 .env
 .vscode
+logs
+output
