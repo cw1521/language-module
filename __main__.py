@@ -2,7 +2,7 @@ import sys
 import os
 from .ner.nertrainer import NERTrainer
 from .translation.translationtrainer import TranslationTrainer
-from .experiments import perform_experiment1
+from .experiments import perform_experiment1, perform_experiment2
 
 
 
@@ -182,11 +182,6 @@ def train(arg_dict, token):
 
 
 
-# def perform_experiment():
-
-#     if 
-
-
 
 def main():
     hf_token = os.environ["HFAT"]
@@ -211,6 +206,14 @@ def main():
                 ds_name=arg_dict["dataset_name"]
                 output_file=arg_dict["output"]
                 perform_experiment1(s1, r1, ds_name, hf_token, output_file)
+            elif exp == "exp2":
+                s1=arg_dict["s1"]
+                r1=arg_dict["r1"]
+                r2=arg_dict["r2"]
+                ds_name=arg_dict["dataset_name"]
+                output_file=arg_dict["output"]
+                perform_experiment2(s1, r1, r2, ds_name, hf_token, output_file)
+
     return 0
 
 
