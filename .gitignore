@@ -13,3 +13,5 @@ env
 .vscode
 logs
 output
+
+assets/*.jsonl
