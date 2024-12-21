@@ -117,9 +117,9 @@ def process_results(ds, sender_checkpoint, receiver1_checkpoint, receiver2_check
         count+=1
 
         print_log(count, START_TIME, ds_size)
-        if count % 2 == 0 or count == len(ds):
+        if count % 100 == 0 or count == len(ds):
             write_log(count, ds_size, START_TIME, output_folder)
-        if count % 5 == 0 or count == ds_size:
+        if count % 500 == 0 or count == ds_size:
             json_to_file(results_list, output_folder, output_file)
             results_list=[]
 
@@ -134,7 +134,7 @@ def process_results(ds, sender_checkpoint, receiver1_checkpoint, receiver2_check
 
 def perform_experiment2(sender_checkpoint, receiver1_checkpoint, receiver2_checkpoint, dataset_name, hf_token, output_file):
     # print(receiver1_checkpoint)
-    output_folder=f"{getcwd()}/{output_file.replace('.jsonl', '')}"
+    output_folder=f"{getcwd()}/output/{output_file.replace('.jsonl', '')}"
     create_folder_if_not_exists(output_folder)
 
     ds=get_dataset(dataset_name)

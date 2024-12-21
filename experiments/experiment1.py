@@ -2,7 +2,7 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import sacremoses
 from time import time
 from os import getcwd
-from ..langhelper import print_log, create_folder_if_not_exists, print_result
+from ..langhelper import print_log, print_result, create_folder_if_not_exists
 from ..langhelper import write_log, get_dataset, json_to_file
 
 
@@ -40,9 +40,9 @@ def process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output
 
         print_log(count, START_TIME, ds_size)
 
-        if count % 2 == 0 or count == ds_size:
+        if count % 100 == 0 or count == ds_size:
             write_log(count, len(ds), START_TIME, output_folder)
-        if count % 5 == 0 or count == ds_size:
+        if count % 500 == 0 or count == ds_size:
             json_to_file(results_list, output_folder, output_file)
             results_list=[]
 
@@ -50,7 +50,7 @@ def process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output
 
 
 def perform_experiment1(sender_checkpoint, receiver_checkpoint, dataset_name, hf_token, output_file):
-    output_folder=f"{getcwd()}/{output_file.replace('.jsonl', '')}"
+    output_folder=f"{getcwd()}/output/{output_file.replace('.jsonl', '')}"
     create_folder_if_not_exists(output_folder)
 
     ds=get_dataset(dataset_name)
