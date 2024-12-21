@@ -3,6 +3,7 @@ import os
 from .ner.nertrainer import NERTrainer
 from .translation.translationtrainer import TranslationTrainer
 from .experiments import perform_experiment1, perform_experiment2
+from .evaluation import evaluate_results
 
 
 
@@ -197,7 +198,9 @@ def main():
             assert_valid_train_args(arg_dict)
             train(arg_dict, hf_token)
         elif mode == "eval":
-            return
+            ifile=arg_dict["ifile"]
+            ofile=arg_dict["ofile"]
+            evaluate_results(ifile, ofile)
         elif mode == "exp":
             exp=arg_dict["exp"]
             if exp == "exp1":
@@ -213,6 +216,7 @@ def main():
                 ds_name=arg_dict["dataset_name"]
                 output_file=arg_dict["output"]
                 perform_experiment2(s1, r1, r2, ds_name, hf_token, output_file)
+
 
     return 0
 

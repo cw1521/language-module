@@ -14,7 +14,7 @@ def get_dataset(dataset_name):
 
 def json_to_file(results_json, output_folder, file_name):
     file_path = f"{output_folder}/{file_name}"
-    print("Writing output file...\n")
+    print(f"Writing output file {file_path}...\n")
     with jlopen(file_path, "a") as f:
         f.write_all(results_json)
 
@@ -24,6 +24,14 @@ def create_folder_if_not_exists(folder_path):
     if not path.exists(folder_path):
         makedirs(folder_path)
 
+def print_eval(eval):
+    print(f"Target: {eval['target']}\n")
+    print(f"NL: {eval['nl']}\n")
+    print(f"Predicted: {eval['predicted']}\n")
+    print(f"SAVL: {eval['loss']}\n")
+    print(f"DELF: {eval['dloss']}\n")
+    print(f"Cosine: {eval['cosine']}\n")
+    print(f"Jaccard: {eval['jaccard']}\n\n")
 
 
 def print_result(result):
@@ -49,3 +57,11 @@ def print_log(count, start_time, max_num):
     print(f"Elapsed time: {elapsed}")
     print(f"{round(count/max_num, 3)}% completed\n\n")
 
+
+
+def open_file(file_path):
+    file=[]
+    with jlopen(file_path) as f:
+        for line in f:
+            file.append(line)
+    return file
