@@ -67,8 +67,8 @@ def get_value(percept, string):
                         return num
                     except:
                         # print("Else")
-                        # print(f"Invalid value: {tmp}")
-                        # print(f"Invalid string: {string}\n\n{elem}\n\n{tmp}\n\n")
+                        # print(f"Invalid value: {temp}")
+                        # print(f"Invalid string: {string}\n\n{tmp}\n\n{temp}\n\n")
                         return 1
                 else:
                     return 1
@@ -77,20 +77,6 @@ def get_value(percept, string):
 
 
 
-def get_position(string):
-    temp=string.split("position")[1].strip().split()
-    # print(temp)
-    try:
-        num1=int(temp[0])
-        num2=int(temp[1])
-        return num1, num2
-    except:
-        print(f"num1:{num1} num2:{num2}\n\n{temp}\n\n")
-        return 0, 0
-
-
-
-
 
 def get_position(string):
     temp=string.split("position")[1].strip().split()
@@ -101,7 +87,7 @@ def get_position(string):
         return num1, num2
     except:
         print(f"num1:{num1} num2:{num2}\n\n{temp}\n\n")
-        return 0, 0
+        return None, None
 
 
 
@@ -144,8 +130,11 @@ def calc_domain_loss(p1, p2):
             if p == 'position':
                 x1,y1=get_position(p1)
                 x2,y2=get_position(p2)
-                sum+=abs(x1-y1)*0.000122
-                sum+=abs(x2-y2)*0.0000976
+                if x1 != None or x2 != None:
+                    sum+=abs(x1-y1)*0.000122
+                    sum+=abs(x2-y2)*0.0000976
+                else:
+                    sum+=2
         else:
             sum+=1
         # print(f"percept:{p}\nsum:{sum}\n")
@@ -194,8 +183,11 @@ def calc_loss(p1, p2):
             if p == 'position':
                 x1,y1=get_position(p1)
                 x2,y2=get_position(p2)
-                sum+=abs(x1-y1)*0.0001
-                sum+=abs(x2-y2)*0.0001
+                if x1 != None or x2 != None:
+                    sum+=abs(x1-y1)*0.0001
+                    sum+=abs(x2-y2)*0.0001
+                else:
+                    sum+=2
         else:
             sum+=1
         # print(f"percept:{p}\nsum:{sum}\n")
@@ -225,11 +217,11 @@ def combine_texts(target, nl, predicted):
 
 def evaluate_results(ifile_path, ofile_path):
     output_folder=f"{getcwd()}/output/{ofile_path}".replace(".jsonl", "")
-    results=open_file(ifile_path)
+    results=open_file(ifile_path)[:100]
     create_folder_if_not_exists(output_folder)
     evaluated_results=[]
     count=0
-    print(results)
+    # print(results)
     for result in results:
         count+=1
         target=result["target"]
