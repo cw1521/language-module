@@ -52,7 +52,7 @@ def get_value(percept, string):
             # print("If")
             # print(f"Invalid value: {temp1}")
             # print(f"Invalid string: {string}\n\n{temp}\n\n{temp1}\n\n")
-            return 1
+            return None
     else:
         list1=[x for x 	in temp if len(x)>0]
         # print(list1)
@@ -69,10 +69,10 @@ def get_value(percept, string):
                         # print("Else")
                         # print(f"Invalid value: {temp}")
                         # print(f"Invalid string: {string}\n\n{tmp}\n\n{temp}\n\n")
-                        return 1
+                        return None
                 else:
-                    return 1
-    return 1		
+                    return None
+    return None
 
 
 
@@ -113,24 +113,35 @@ def calc_domain_loss(p1, p2):
             if p in dom_bool:
                 v1=get_value(p,p1)
                 v2=get_value(p,p2)
-                if v1 != v2:
+                if v1 == None or v2 == None:
+                    sum+=1
+                elif v1 != v2:
                     sum+=1*0.5
             if p in dom1:
                 v1=get_value(p,p1)
                 v2=get_value(p,p2)
-                sum+=abs(v1-v2)*0.01
+                if v1 == None or v2 == None:
+                    sum+=1
+                else:
+                    sum+=abs(v1-v2)*0.01
             if p in dom2:
                 v1=get_value(p,p1)
                 v2=get_value(p,p2)
-                sum+=abs(v1-v2)*0.002778
+                if v1 == None or v2 == None:
+                    sum+=1
+                else:
+                    sum+=abs(v1-v2)*0.002778
             if p in dom3:
                 v1=get_value(p,p1)
                 v2=get_value(p,p2)
-                sum+=abs(v1-v2)*0.0004348
+                if v1 == None or v2 == None:
+                    sum+=1
+                else:               
+                    sum+=abs(v1-v2)*0.0004348
             if p == 'position':
                 x1,y1=get_position(p1)
                 x2,y2=get_position(p2)
-                if x1 != None or x2 != None:
+                if x1 != None and x2 != None:
                     sum+=abs(x1-y1)*0.000122
                     sum+=abs(x2-y2)*0.0000976
                 else:
@@ -166,24 +177,35 @@ def calc_loss(p1, p2):
             if p in bool_percepts:
                 v1=get_value(p,p1)
                 v2=get_value(p,p2)
-                if v1 != v2:
+                if v1 == None or v2 == None:
+                    sum+=1
+                elif v1 != v2:
                     sum+=1*0.1
             if p in ten_one_percepts:
                 v1=get_value(p,p1)
                 v2=get_value(p,p2)
-                sum+=abs(v1-v2)*0.01  
+                if v1 == None or v2 == None:
+                    sum+=1
+                else:   
+                    sum+=abs(v1-v2)*0.01  
             if p in ten_two_percepts:
                 v1=get_value(p,p1)
                 v2=get_value(p,p2)
-                sum+=abs(v1-v2)*0.001
+                if v1 == None or v2 == None:
+                    sum+=1
+                else:   
+                    sum+=abs(v1-v2)*0.001
             if p in ten_three_percepts:
                 v1=get_value(p,p1)
                 v2=get_value(p,p2)
-                sum+=abs(v1-v2)*0.0001
+                if v1 == None or v2 == None:
+                    sum+=1
+                else:   
+                    sum+=abs(v1-v2)*0.0001
             if p == 'position':
                 x1,y1=get_position(p1)
                 x2,y2=get_position(p2)
-                if x1 != None or x2 != None:
+                if x1 != None and x2 != None:
                     sum+=abs(x1-y1)*0.0001
                     sum+=abs(x2-y2)*0.0001
                 else:
