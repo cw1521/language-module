@@ -41,6 +41,7 @@ def jaccard_similarity(str1, str2):
 
 
 def get_value(percept, string):
+    
     temp=string.split(percept)
     if len(temp) == 2:
         # print(temp)
@@ -61,9 +62,9 @@ def get_value(percept, string):
                 tmp=elem.strip().split()
                 # print(len(tmp))
                 if len(tmp)>0:
-                    temp=tmp[0]
+                    temp1=tmp[0]
                     try:
-                        num=int(float(temp))
+                        num=int(float(temp1))
                         return num
                     except:
                         # print("Else")
@@ -72,7 +73,7 @@ def get_value(percept, string):
                         return None
                 else:
                     return None
-    return None
+        return None
 
 
 
