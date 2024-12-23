@@ -14,4 +14,4 @@ env
 logs
 output
 
-assets/*.jsonl
+assets/data/*
