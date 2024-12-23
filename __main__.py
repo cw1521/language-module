@@ -207,15 +207,17 @@ def main():
                 s1=arg_dict["s1"]
                 r1=arg_dict["r1"]
                 ds_name=arg_dict["dataset_name"]
+                end=["end"]
                 output_file=arg_dict["output"]
-                perform_experiment1(s1, r1, ds_name, hf_token, output_file)
+                perform_experiment1(s1, r1, ds_name, end, hf_token, output_file)
             elif exp == "exp2":
                 s1=arg_dict["s1"]
                 r1=arg_dict["r1"]
                 r2=arg_dict["r2"]
                 ds_name=arg_dict["dataset_name"]
+                end=["end"]
                 output_file=arg_dict["output"]
-                perform_experiment2(s1, r1, r2, ds_name, hf_token, output_file)
+                perform_experiment2(s1, r1, r2, ds_name, end, hf_token, output_file)
 
 
     return 0
