@@ -49,11 +49,11 @@ def process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output
 
 
 
-def perform_experiment1(sender_checkpoint, receiver_checkpoint, dataset_name, end, hf_token, output_file):
+def perform_experiment1(sender_checkpoint, receiver_checkpoint, dataset_name, start, end, hf_token, output_file):
     output_folder=f"{getcwd()}/output/{output_file.replace('.jsonl', '')}"
     create_folder_if_not_exists(output_folder)
 
-    ds=get_dataset(dataset_name)[:end]
+    ds=get_dataset(dataset_name)[start:end]
 
     process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output_folder, output_file)
     
