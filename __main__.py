@@ -51,6 +51,8 @@ def get_arg_dict_template():
     arg_dict["batch_size"] = None
     arg_dict["num_epochs"] = 10
     arg_dict["exp"]=None
+    arg_dict["start"]=0
+    arg_dict["end"]=-1
     arg_dict["s1"]=None
     arg_dict["r1"]=None
     arg_dict["r2"]=None
@@ -182,7 +184,13 @@ def train(arg_dict, token):
         print("Task currently unsupported.")
 
 
-
+def get_int(str_int, default):
+    num=0
+    try:
+        num=int(str_int)
+    except:
+        num=default
+    return num
 
 def main():
     hf_token = os.environ["HFAT"]
@@ -203,23 +211,24 @@ def main():
             evaluate_results(ifile, ofile)
         elif mode == "exp":
             exp=arg_dict["exp"]
-            try:
-                end=int(arg_dict["end"])
-            except:
-                end=-1
+            default_start=0
+            default_end=-1
+            start=get_int(arg_dict["start"], default_start)
+            end=get_int(arg_dict["end"], default_end)
+
             if exp == "exp1":
                 s1=arg_dict["s1"]
                 r1=arg_dict["r1"]
                 ds_name=arg_dict["dataset_name"]
                 output_file=arg_dict["output"]
-                perform_experiment1(s1, r1, ds_name, end, hf_token, output_file)
+                perform_experiment1(s1, r1, ds_name, start, end, hf_token, output_file)
             elif exp == "exp2":
                 s1=arg_dict["s1"]
                 r1=arg_dict["r1"]
                 r2=arg_dict["r2"]
                 ds_name=arg_dict["dataset_name"]
                 output_file=arg_dict["output"]
-                perform_experiment2(s1, r1, r2, ds_name, end, hf_token, output_file)
+                perform_experiment2(s1, r1, r2, ds_name, start, end, hf_token, output_file)
 
 
     return 0
