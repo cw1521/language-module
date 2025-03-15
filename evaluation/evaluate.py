@@ -87,7 +87,7 @@ def get_position(string):
         num2=int(temp[1])
         return num1, num2
     except:
-        print(f"num1:{num1} num2:{num2}\n\n{temp}\n\n")
+        # print(f"num1:{num1} num2:{num2}\n\n{temp}\n\n")
         return None, None
 
 
@@ -142,16 +142,19 @@ def calc_domain_loss(p1, p2):
             if p == 'position':
                 x1,y1=get_position(p1)
                 x2,y2=get_position(p2)
-                if x1 != None and x2 != None:
+                if x1 != None and y1 != None:
                     sum+=abs(x1-y1)*0.000122
+                else:
+                    sum+=1
+                if x2 != None and y2 != None:
                     sum+=abs(x2-y2)*0.0000976
                 else:
-                    sum+=2
+                    sum+=1
         else:
             sum+=1
         # print(f"percept:{p}\nsum:{sum}\n")
 
-    avg=sum/13
+    avg=(sum/13)*100
 
     return avg
 
@@ -165,11 +168,11 @@ def calc_loss(p1, p2):
     bool_percepts = ['is_demoed', 'on_ground', 'ball_touched', 'throttle',
                     'steer', 'jump', 'boost', 'handbrake']
 
-    ten_one_percepts=['boost_amount']
+    ten_two_percepts=['boost_amount']
 
-    ten_two_percepts=['direction']
+    ten_three_percepts=['direction']
 
-    ten_three_percepts=['speed']
+    ten_four_percepts=['speed']
 
 
     sum=0
@@ -182,21 +185,21 @@ def calc_loss(p1, p2):
                     sum+=1
                 elif v1 != v2:
                     sum+=1*0.1
-            if p in ten_one_percepts:
-                v1=get_value(p,p1)
-                v2=get_value(p,p2)
-                if v1 == None or v2 == None:
-                    sum+=1
-                else:   
-                    sum+=abs(v1-v2)*0.01  
             if p in ten_two_percepts:
                 v1=get_value(p,p1)
                 v2=get_value(p,p2)
                 if v1 == None or v2 == None:
                     sum+=1
                 else:   
-                    sum+=abs(v1-v2)*0.001
+                    sum+=abs(v1-v2)*0.01  
             if p in ten_three_percepts:
+                v1=get_value(p,p1)
+                v2=get_value(p,p2)
+                if v1 == None or v2 == None:
+                    sum+=1
+                else:   
+                    sum+=abs(v1-v2)*0.01
+            if p in ten_four_percepts:
                 v1=get_value(p,p1)
                 v2=get_value(p,p2)
                 if v1 == None or v2 == None:
@@ -206,16 +209,19 @@ def calc_loss(p1, p2):
             if p == 'position':
                 x1,y1=get_position(p1)
                 x2,y2=get_position(p2)
-                if x1 != None and x2 != None:
+                if x1 != None and y1 != None:
                     sum+=abs(x1-y1)*0.0001
-                    sum+=abs(x2-y2)*0.0001
                 else:
-                    sum+=2
+                    sum+=1
+                if x2 != None and y2 != None:
+                    sum+=abs(x2-y2)*0.00001
+                else:
+                    sum+=1
         else:
             sum+=1
         # print(f"percept:{p}\nsum:{sum}\n")
 
-    avg=sum/13
+    avg=(sum/13)*100
 
     return avg
 
@@ -239,8 +245,11 @@ def combine_texts(target, nl, predicted):
 
 
 def evaluate_results(ifile_path, ofile_path):
+    print(f"file path {ifile_path}")
     output_folder=f"{getcwd()}/output/{ofile_path}".replace(".jsonl", "")
-    results=open_file(ifile_path)[:100]
+    results=open_file(ifile_path)
+
+    print("file opened")
     create_folder_if_not_exists(output_folder)
     evaluated_results=[]
     count=0
@@ -252,8 +261,9 @@ def evaluate_results(ifile_path, ofile_path):
         predicted=result["predicted"]
         evaluated=combine_texts(target, nl, predicted)
         evaluated_results.append(evaluated)
-        print(f"Evaluated Results: {count} out of {len(results)}\n")
-        print_eval(evaluated)
+        if count%10000==0:
+            print(f"Evaluated Results: {count} out of {len(results)}\n")
+            print_eval(evaluated)
         
     
     json_to_file(evaluated_results, output_folder, ofile_path)
