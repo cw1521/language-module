@@ -54,7 +54,7 @@ def get_results(files, exp_type):
     results=init_results()
     avg_results=init_avg_results(files)
     for i in files:
-        fname=f"data/results-{exp_type}-{i}.jsonl"
+        fname=f"./language-module/data/results-{exp_type}-{i}.jsonl"
         ds=load_ds(fname)
         stats=get_stats(ds)
         results[i]=stats
@@ -91,10 +91,10 @@ def show_line_graph(field, ds, x_values, exp):
 
 def main():
     st_nl_files=["10", "30", "40", "50"]
-    nl_ner_st_files=["20", "30"]
+    nl_ner_st_files=["10", "20", "30"]
 
-    st_nl_results, st_nl_avg=get_results(st_nl_files, "st-nl-st")
-    nl_ner_results, nl_ner_avg=get_results(nl_ner_st_files, "nl-ner-st")
+    st_nl_results,st_nl_avg=get_results(st_nl_files, "st-nl-st")
+    st_nl_results,nl_ner_avg=get_results(nl_ner_st_files, "nl-ner-st")
 
     # Avg Loss
     show_line_graph("loss", st_nl_avg, st_nl_files, "1")
@@ -125,5 +125,3 @@ def main():
 
 
 
-if __name__ == "__main__":
-    main()

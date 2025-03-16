@@ -4,7 +4,7 @@ from .ner.nertrainer import NERTrainer
 from .translation.translationtrainer import TranslationTrainer
 from .experiments import perform_experiment1, perform_experiment2
 from .evaluation import evaluate_results
-
+from .results import results
 
 
 
@@ -57,6 +57,8 @@ def get_arg_dict_template():
     arg_dict["r1"]=None
     arg_dict["r2"]=None
     arg_dict["output"]=None
+    arg_dict["ifile"]=None
+    arg_dict["ofile"]=None
     return arg_dict
 
 
@@ -111,7 +113,7 @@ def train(arg_dict, token):
         raise TypeError
 
     
-    if task == "nl-ner":
+    if task.lower() == "nl-ner":
         label_list = get_label_list()
         assert(label_list != None)            
         input = "tokens"
@@ -132,7 +134,7 @@ def train(arg_dict, token):
 
 
 
-    elif task == "ner-st":
+    elif task.lower() == "ner-st":
         input = "ner_sentence"
         target = "state"
         controller = TranslationTrainer(
@@ -148,7 +150,7 @@ def train(arg_dict, token):
         )
         controller.train()
 
-    elif task == "en-st":
+    elif task.lower() == "en-st":
         input = "sentence"
         target = "state"
         controller = TranslationTrainer(
@@ -164,7 +166,7 @@ def train(arg_dict, token):
         )
         controller.train()
 
-    elif task == "st-en":
+    elif task.lower() == "st-en":
         input = "state"
         target = "sentence"
         controller = TranslationTrainer(
@@ -179,7 +181,7 @@ def train(arg_dict, token):
             token
         )
         controller.train()
-    
+
     else:
         print("Task currently unsupported.")
 
@@ -229,7 +231,8 @@ def main():
                 ds_name=arg_dict["dataset_name"]
                 output_file=arg_dict["output"]
                 perform_experiment2(s1, r1, r2, ds_name, start, end, hf_token, output_file)
-
+        elif mode == "results":
+            results.main()
 
     return 0
 
