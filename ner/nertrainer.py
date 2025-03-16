@@ -159,19 +159,9 @@ class NERTrainer:
 
 
     def get_trainer(self):
-        # train, valid = self.get_tokenized_dataset()
         args = self.get_training_args()
-        # self.dataset=self.dataset.rename_column("ner_tags", "ner_ids")
         train=self.dataset["train"]
         valid=self.dataset["validation"]
-        # train.set_format(
-        #     type="torch",
-        #     columns=["input_ids", "attention_mask", "labels"],
-        # )
-        # valid.set_format(
-        #     type="torch",
-        #     columns=["input_ids", "attention_mask", "labels"],
-        # )
 
         trainer = Trainer(
             model=self.model,

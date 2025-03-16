@@ -55,8 +55,8 @@ def get_results(files, exp_type):
     results=init_results()
     avg_results=init_avg_results(files)
     for i in files:
-        fname=f"data/{exp_type}-{i}.jsonl"
-        ds=load_ds(fname)[:49999]
+        fname=f"data/results-{exp_type}-{i}.jsonl"
+        ds=load_ds(fname)
         stats=get_stats(ds)
         results[i]=stats
         avg_results[i]=stats["avg_results"]
@@ -72,13 +72,19 @@ def display_line_graph(x, y, x_label, y_label, title):
 
 
 
-def get_y_values(index, results, x_values):
+def get_y_values(index, ds, x_values):
     y=[]
     for x in x_values:
-        y_val=results[x][index]
-        print(f'{x}, {y_val}')
+        y_val=ds[x][index]
         y.append(y_val)
     return y
+
+
+
+def show_line_graph(field, ds, x_values, exp):
+    y_values=get_y_values(field, ds, x_values)
+    display_line_graph(x_values, y_values, "epoch", field, 
+                       f"{field} from Experiment {exp}")
 
 
 
@@ -86,12 +92,15 @@ def main():
     st_nl_files=["10", "30", "40", "50"]
     st_ner_st=["20", "30"]
     st_nl_results, st_nl_avg=get_results(st_nl_files, "st-nl-st")
-    st_nl_loss=get_y_values("loss", st_nl_avg, st_nl_files)
-    display_line_graph(st_nl_files, st_nl_loss, "epoch", "loss",
-                       "Loss from Experiment 1")
 
 
-    # print(st_nl_results)
+    # # Avg Loss
+    # st_nl_loss=get_y_values("loss", st_nl_avg, st_nl_files)
+    # display_line_graph(st_nl_files, st_nl_loss, "epoch", "loss",
+    #                    "Loss from Experiment 1")
+    show_line_graph("loss", st_nl_avg, st_nl_files, "1")
+
+
 
 
 
