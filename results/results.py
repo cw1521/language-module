@@ -94,11 +94,17 @@ def main():
     st_nl_results, st_nl_avg=get_results(st_nl_files, "st-nl-st")
 
 
-    # # Avg Loss
-    # st_nl_loss=get_y_values("loss", st_nl_avg, st_nl_files)
-    # display_line_graph(st_nl_files, st_nl_loss, "epoch", "loss",
-    #                    "Loss from Experiment 1")
+    # Avg Loss
     show_line_graph("loss", st_nl_avg, st_nl_files, "1")
+
+    # Avg Domain Loss
+    show_line_graph("dloss", st_nl_avg, st_nl_files, "1")
+
+    # Jaccard
+    show_line_graph("jaccard", st_nl_avg, st_nl_files, "1")
+
+    # Cosine
+    show_line_graph("cosine", st_nl_avg, st_nl_files, "1")
 
 
 
