@@ -1,5 +1,6 @@
 import json
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 
@@ -59,7 +60,7 @@ def get_results(files, exp_type):
         stats=get_stats(ds)
         results[i]=stats
         avg_results[i]=stats["avg_results"]
-    return results, avg_results
+    return avg_results
 
 
 def display_line_graph(x, y, x_label, y_label, title):
@@ -78,6 +79,15 @@ def get_y_values(index, ds, x_values):
         y.append(y_val)
     return y
 
+def show_table(df, title):
+    pd.set_option("display.precision", 2)
+    fig, ax=plt.subplots()
+    table=pd.plotting.table(ax, df, loc="center")
+    ax.axis("off")
+    plt.tight_layout()
+    plt.title(title, loc="center", y=0.7)
+    plt.show()
+
 
 
 def show_line_graph(field, ds, x_values, exp):
@@ -93,8 +103,15 @@ def main():
     st_nl_files=["10", "30", "40", "50"]
     nl_ner_st_files=["10", "20", "30"]
 
-    st_nl_results,st_nl_avg=get_results(st_nl_files, "st-nl-st")
-    st_nl_results,nl_ner_avg=get_results(nl_ner_st_files, "nl-ner-st")
+    st_nl_avg=get_results(st_nl_files, "st-nl-st")
+    nl_ner_avg=get_results(nl_ner_st_files, "nl-ner-st")
+
+    st_nl_df=pd.DataFrame.from_dict(st_nl_avg).round(3)
+    nl_ner_df=pd.DataFrame.from_dict(nl_ner_avg).round(3)
+
+
+    show_table(st_nl_df, "Experiment 1")
+    show_table(nl_ner_df, "Experiment 2")
 
     # Avg Loss
     show_line_graph("loss", st_nl_avg, st_nl_files, "1")
@@ -107,6 +124,8 @@ def main():
 
     # Cosine
     show_line_graph("cosine", st_nl_avg, st_nl_files, "1")
+
+
 
     ### NL-NER-ST
     # Avg Loss
