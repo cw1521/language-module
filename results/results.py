@@ -35,7 +35,6 @@ def get_stats(ds):
 
 def init_results():
     results={}
-    epoch=""
     results["loss"]=0    
     results["dloss"]=0
     results["jaccard"]=0
@@ -83,6 +82,8 @@ def get_y_values(index, ds, x_values):
 
 def show_line_graph(field, ds, x_values, exp):
     y_values=get_y_values(field, ds, x_values)
+    if field=="dloss":
+        field="Domain Loss"
     display_line_graph(x_values, y_values, "epoch", field, 
                        f"{field} from Experiment {exp}")
 
@@ -90,9 +91,10 @@ def show_line_graph(field, ds, x_values, exp):
 
 def main():
     st_nl_files=["10", "30", "40", "50"]
-    st_ner_st=["20", "30"]
-    st_nl_results, st_nl_avg=get_results(st_nl_files, "st-nl-st")
+    nl_ner_st_files=["20", "30"]
 
+    st_nl_results, st_nl_avg=get_results(st_nl_files, "st-nl-st")
+    nl_ner_results, nl_ner_avg=get_results(nl_ner_st_files, "nl-ner-st")
 
     # Avg Loss
     show_line_graph("loss", st_nl_avg, st_nl_files, "1")
@@ -106,8 +108,18 @@ def main():
     # Cosine
     show_line_graph("cosine", st_nl_avg, st_nl_files, "1")
 
+    ### NL-NER-ST
+    # Avg Loss
+    show_line_graph("loss", nl_ner_avg, nl_ner_st_files, "2")
 
+    # Avg Domain Loss
+    show_line_graph("dloss", nl_ner_avg, nl_ner_st_files, "2")
 
+    # Jaccard
+    show_line_graph("jaccard", nl_ner_avg, nl_ner_st_files, "2")
+
+    # Cosine
+    show_line_graph("cosine", nl_ner_avg, nl_ner_st_files, "2")
 
 
 
