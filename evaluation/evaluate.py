@@ -154,7 +154,7 @@ def calc_domain_loss(p1, p2):
             sum+=1
         # print(f"percept:{p}\nsum:{sum}\n")
 
-    avg=(sum/13)*100
+    avg=sum/13
 
     return avg
 
@@ -198,19 +198,19 @@ def calc_loss(p1, p2):
                 if v1 == None or v2 == None:
                     sum+=1
                 else:   
-                    sum+=abs(v1-v2)*0.01
+                    sum+=abs(v1-v2)*0.001
             if p in ten_four_percepts:
                 v1=get_value(p,p1)
                 v2=get_value(p,p2)
                 if v1 == None or v2 == None:
                     sum+=1
                 else:   
-                    sum+=abs(v1-v2)*0.0001
+                    sum+=abs(v1-v2)*0.00001
             if p == 'position':
                 x1,y1=get_position(p1)
                 x2,y2=get_position(p2)
                 if x1 != None and y1 != None:
-                    sum+=abs(x1-y1)*0.0001
+                    sum+=abs(x1-y1)*0.00001
                 else:
                     sum+=1
                 if x2 != None and y2 != None:
@@ -221,8 +221,7 @@ def calc_loss(p1, p2):
             sum+=1
         # print(f"percept:{p}\nsum:{sum}\n")
 
-    avg=(sum/13)*100
-
+    avg=sum/12
     return avg
 
 
@@ -254,16 +253,23 @@ def evaluate_results(ifile_path, ofile_path):
     evaluated_results=[]
     count=0
     # print(results)
+    # evaluated=''
     for result in results:
+        evaluated=None
+        result["nl"]=None
+        result["predicted"]=None
+        result["target"]=None
         count+=1
         target=result["target"]
         nl=result["nl"]
         predicted=result["predicted"]
-        evaluated=combine_texts(target, nl, predicted)
+        if result["target"] != None and result["nl"] != None and result["predicted"] != None:
+            evaluated=combine_texts(target, nl, predicted)
+        
         evaluated_results.append(evaluated)
         if count%10000==0:
             print(f"Evaluated Results: {count} out of {len(results)}\n")
-            print_eval(evaluated)
+            # print_eval(evaluated)
         
     
     json_to_file(evaluated_results, output_folder, ofile_path)

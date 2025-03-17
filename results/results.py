@@ -14,8 +14,8 @@ def load_ds(file_name):
 
 def get_avg(loss, dloss, jaccard, cosine, ds_size):
     avg_results={}
-    avg_results["loss"]=loss/ds_size
-    avg_results["dloss"]=dloss/ds_size
+    avg_results["loss"]=loss/ds_size/10
+    avg_results["dloss"]=dloss/ds_size/10
     avg_results["jaccard"]=jaccard/ds_size
     avg_results["cosine"]=cosine/ds_size
     return avg_results
@@ -24,12 +24,14 @@ def get_avg(loss, dloss, jaccard, cosine, ds_size):
 def get_stats(ds):
     stats=init_results()
     for data in ds:
-        stats["loss"]+=data["loss"]
-        stats["dloss"]+=data["dloss"]
-        stats["jaccard"]+=data["jaccard"]
-        stats["cosine"]+=data["cosine"]
-        stats["ds_size"]=len(ds)
-        stats["avg_results"]=get_avg(stats["loss"], stats["dloss"],
+        # print(data)
+        if data != None:
+            stats["loss"]+=data["loss"]
+            stats["dloss"]+=data["dloss"]
+            stats["jaccard"]+=data["jaccard"]
+            stats["cosine"]+=data["cosine"]
+            stats["ds_size"]=len(ds)
+            stats["avg_results"]=get_avg(stats["loss"], stats["dloss"],
                                 stats["jaccard"],stats["cosine"], stats["ds_size"])
     return stats
     
@@ -41,14 +43,15 @@ def init_results():
     results["jaccard"]=0
     results["cosine"]=0
     results["ds_size"]=0
+    results["avg_results"]=0
     return results
 
 
 def init_avg_results(fields):
-    avg_result={}
+    avg_results={}
     for field in fields:
-        avg_result[field]=0
-    return avg_result
+        avg_results[field]=0
+    return avg_results
     
 
 def get_results(files, exp_type):
@@ -70,6 +73,10 @@ def display_line_graph(x, y, x_label, y_label, title):
     plt.title(title)
     plt.show()
 
+
+# def revert_to_decimal(nums):
+#     for x in nums:
+        
 
 
 def get_y_values(index, ds, x_values):
@@ -101,17 +108,19 @@ def show_line_graph(field, ds, x_values, exp):
 
 def main():
     st_nl_files=["10", "30", "40", "50"]
-    nl_ner_st_files=["10", "20", "30"]
+    nl_ner_st_files=["10", "20","30"]
 
     st_nl_avg=get_results(st_nl_files, "st-nl-st")
     nl_ner_avg=get_results(nl_ner_st_files, "nl-ner-st")
 
-    st_nl_df=pd.DataFrame.from_dict(st_nl_avg).round(3)
+    st_nl_df=pd.DataFrame(st_nl_avg).round(3)
     nl_ner_df=pd.DataFrame.from_dict(nl_ner_avg).round(3)
 
 
     show_table(st_nl_df, "Experiment 1")
     show_table(nl_ner_df, "Experiment 2")
+
+
 
     # Avg Loss
     show_line_graph("loss", st_nl_avg, st_nl_files, "1")
