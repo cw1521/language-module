@@ -2,13 +2,25 @@ from datasets import load_dataset
 from jsonlines import open as jlopen
 from time import time, strftime, gmtime
 from os import path, makedirs
+import random
 
 
-
-def get_dataset(dataset_name):
+def get_dataset(dataset_name, sample_size):
     data=load_dataset(dataset_name)
     ds=data["test"]["state"]
-    return ds
+    used_index=[]
+    new_ds=[]
+    while len(new_ds) < sample_size:
+        index=random.randint(0, len(ds))
+        if index not in used_index:
+            used_index.append(index)
+            new_ds.append(ds[index])
+    return data(new_ds)
+
+
+def data(ds):
+    for data in ds:
+        yield data
 
 
 

@@ -51,8 +51,9 @@ def get_arg_dict_template():
     arg_dict["batch_size"] = None
     arg_dict["num_epochs"] = 10
     arg_dict["exp"]=None
-    arg_dict["start"]=0
-    arg_dict["end"]=-1
+    # arg_dict["start"]=0
+    # arg_dict["end"]=-1
+    arg_dict=["sample_size"]=0
     arg_dict["s1"]=None
     arg_dict["r1"]=None
     arg_dict["r2"]=None
@@ -196,6 +197,7 @@ def get_int(str_int, default):
 
 def main():
     hf_token = os.environ["HFAT"]
+    # print(hf_token)
     args = sys.argv[1:]
 
     if is_arg_help(args):
@@ -213,24 +215,21 @@ def main():
             evaluate_results(ifile, ofile)
         elif mode == "exp":
             exp=arg_dict["exp"]
-            default_start=0
-            default_end=-1
-            start=get_int(arg_dict["start"], default_start)
-            end=get_int(arg_dict["end"], default_end)
-
+            default_sample_size=500
+            sample_size=get_int(arg_dict["sample_size"], default_sample_size)
             if exp == "exp1":
                 s1=arg_dict["s1"]
                 r1=arg_dict["r1"]
                 ds_name=arg_dict["dataset_name"]
                 output_file=arg_dict["output"]
-                perform_experiment1(s1, r1, ds_name, start, end, hf_token, output_file)
+                perform_experiment1(s1, r1, ds_name, sample_size, hf_token, output_file)
             elif exp == "exp2":
                 s1=arg_dict["s1"]
                 r1=arg_dict["r1"]
                 r2=arg_dict["r2"]
                 ds_name=arg_dict["dataset_name"]
                 output_file=arg_dict["output"]
-                perform_experiment2(s1, r1, r2, ds_name, start, end, hf_token, output_file)
+                perform_experiment2(s1, r1, r2, ds_name, sample_size, hf_token, output_file)
         elif mode == "results":
             results.main()
 
