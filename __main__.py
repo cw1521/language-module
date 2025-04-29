@@ -53,7 +53,7 @@ def get_arg_dict_template():
     arg_dict["exp"]=None
     # arg_dict["start"]=0
     # arg_dict["end"]=-1
-    arg_dict=["sample_size"]=0
+    arg_dict["sample_size"]=0
     arg_dict["s1"]=None
     arg_dict["r1"]=None
     arg_dict["r2"]=None

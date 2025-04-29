@@ -6,8 +6,8 @@ import random
 
 
 def get_dataset(dataset_name, sample_size):
-    data=load_dataset(dataset_name)
-    ds=data["test"]["state"]
+    ds=load_dataset(dataset_name)
+    ds=ds["test"]["state"]
     used_index=[]
     new_ds=[]
     while len(new_ds) < sample_size:
