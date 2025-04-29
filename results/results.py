@@ -14,8 +14,8 @@ def load_ds(file_name):
 
 def get_avg(loss, dloss, jaccard, cosine, ds_size):
     avg_results={}
-    avg_results["loss"]=loss/ds_size/10
-    avg_results["dloss"]=dloss/ds_size/10
+    avg_results["loss"]=loss/ds_size
+    avg_results["dloss"]=dloss/ds_size
     avg_results["jaccard"]=jaccard/ds_size
     avg_results["cosine"]=cosine/ds_size
     return avg_results
@@ -26,13 +26,16 @@ def get_stats(ds):
     for data in ds:
         # print(data)
         if data != None:
-            stats["loss"]+=data["loss"]
-            stats["dloss"]+=data["dloss"]
-            stats["jaccard"]+=data["jaccard"]
-            stats["cosine"]+=data["cosine"]
-            stats["ds_size"]=len(ds)
-            stats["avg_results"]=get_avg(stats["loss"], stats["dloss"],
-                                stats["jaccard"],stats["cosine"], stats["ds_size"])
+            try:
+                stats["loss"]+=data["loss"]
+                stats["dloss"]+=data["dloss"]
+                stats["jaccard"]+=data["jaccard"]
+                stats["cosine"]+=data["cosine"]
+                stats["ds_size"]=len(ds)
+                stats["avg_results"]=get_avg(stats["loss"], stats["dloss"],
+                                    stats["jaccard"],stats["cosine"], stats["ds_size"])
+            except:
+                print("missing value")
     return stats
     
 
@@ -107,14 +110,14 @@ def show_line_graph(field, ds, x_values, exp):
 
 
 def main():
-    st_nl_files=["10", "30", "40", "50"]
+    st_nl_files=["10", "20", "30", "40", "50"]
     nl_ner_st_files=["10", "20","30"]
 
     st_nl_avg=get_results(st_nl_files, "st-nl-st")
     nl_ner_avg=get_results(nl_ner_st_files, "nl-ner-st")
 
     st_nl_df=pd.DataFrame(st_nl_avg).round(3)
-    nl_ner_df=pd.DataFrame.from_dict(nl_ner_avg).round(3)
+    nl_ner_df=pd.DataFrame(nl_ner_avg).round(3)
 
 
     show_table(st_nl_df, "Experiment 1")
