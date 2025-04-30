@@ -59,7 +59,7 @@ def perform_experiment1(sender_checkpoint, receiver_checkpoint, dataset_name, sa
 
     ds=get_dataset(dataset_name, sample_size)
 
-    output_file_name=f"{time}_{output_file}"
+    output_file_name=f"{time()}_{output_file}"
 
     process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output_folder, output_file_name)
     

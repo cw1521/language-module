@@ -139,7 +139,9 @@ def perform_experiment2(sender_checkpoint, receiver1_checkpoint, receiver2_check
 
     ds=get_dataset(dataset_name, sample_size)
 
-    process_results(ds, sender_checkpoint, receiver1_checkpoint, receiver2_checkpoint, hf_token, output_folder, output_file)
+    output_file_name=f"{time()}_{output_file}"
+
+    process_results(ds, sender_checkpoint, receiver1_checkpoint, receiver2_checkpoint, hf_token, output_folder, output_file_name)
 
 
     return 0
