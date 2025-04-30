@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 from datasets import load_dataset
 import sacremoses
-from time import time, strftime
+from time import time, strftime, gmtime
 from os import getcwd
 from ..langhelper import print_log, print_result, create_folder_if_not_exists
 from ..langhelper import write_log, data, json_to_file
@@ -60,7 +60,7 @@ def perform_experiment1(sender_checkpoint, receiver_checkpoint, dataset_name, sa
 
     ds=load_dataset(dataset_name, split="test")["state"]
 
-    output_file_name=f"{strftime("%H:%M:%S",time())}_{output_file}"
+    output_file_name=f"{strftime('%H:%M:%S', gmtime(time()))}_{output_file}"
 
     process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output_folder, output_file_name)
     

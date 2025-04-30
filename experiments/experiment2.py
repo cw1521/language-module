@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForTokenClassification 
 from transformers import AutoModelForSeq2SeqLM
 from ..langhelper import print_log, create_folder_if_not_exists, print_result
-from ..langhelper import write_log, get_dataset, json_to_file
+from ..langhelper import write_log, data, json_to_file
 from time import time
 from os import getcwd
 
