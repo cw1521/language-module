@@ -10,8 +10,9 @@ def get_dataset(dataset_name, sample_size):
     ds=ds["test"]["state"]
     used_index=[]
     new_ds=[]
+    ds_size=len(ds)-1
     while len(new_ds) < sample_size:
-        index=random.randint(0, len(ds))
+        index=random.randint(0, ds_size)
         if index not in used_index:
             used_index.append(index)
             new_ds.append(ds[index])
