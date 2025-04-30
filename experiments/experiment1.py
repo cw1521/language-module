@@ -26,8 +26,8 @@ def process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output
 
     count=0
     ds_size=len(ds)
-
     
+
 
     for sender_out in sender_transcriber(ds):
 
@@ -45,7 +45,7 @@ def process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output
 
         count+=1
 
-        if count % 500 == 0 or count == ds_size:
+        if count % 5 == 0 or count == ds_size:
             json_to_file(results_list, output_folder, output_file)
             results_list=[]
 

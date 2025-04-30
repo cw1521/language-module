@@ -53,7 +53,7 @@ def get_arg_dict_template():
     arg_dict["exp"]=None
     # arg_dict["start"]=0
     # arg_dict["end"]=-1
-    arg_dict["sample_size"]=0
+    arg_dict["sample_size"]=500
     arg_dict["s1"]=None
     arg_dict["r1"]=None
     arg_dict["r2"]=None
@@ -187,6 +187,8 @@ def train(arg_dict, token):
         print("Task currently unsupported.")
 
 
+
+
 def get_int(str_int, default):
     num=0
     try:
@@ -194,6 +196,10 @@ def get_int(str_int, default):
     except:
         num=default
     return num
+
+
+
+
 
 def main():
     hf_token = os.environ["HFAT"]
@@ -217,6 +223,7 @@ def main():
             exp=arg_dict["exp"]
             default_sample_size=500
             sample_size=get_int(arg_dict["sample_size"], default_sample_size)
+            # print(sample_size)
             if exp == "exp1":
                 s1=arg_dict["s1"]
                 r1=arg_dict["r1"]

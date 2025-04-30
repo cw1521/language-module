@@ -15,12 +15,13 @@ def get_dataset(dataset_name, sample_size):
         if index not in used_index:
             used_index.append(index)
             new_ds.append(ds[index])
-    return data(new_ds)
+    # print(new_ds)
+    return new_ds
 
 
-def data(ds):
-    for data in ds:
-        yield data
+# def data(ds):
+#     for data in ds:
+#         yield data
 
 
 
