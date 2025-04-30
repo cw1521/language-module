@@ -31,13 +31,12 @@ def process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output
 
     for sender_out in sender_transcriber(ds):
 
-    # for sender_out in sender_transcriber(ds):
-        sender_message=sender_out[0]["translation_text"]
-        # print(sender_message)
+        sender_message=sender_out["translation_text"]
+
         receiver_message=receiver_transcriber(sender_message)[0]["translation_text"]
 
         result={}
-        result["target"]=sender_message
+        result["target"]=ds[count]
 
         result["predicted"]=receiver_message
 
@@ -45,7 +44,7 @@ def process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output
 
         count+=1
 
-        if count % 5 == 0 or count == ds_size:
+        if count % 5000 == 0 or count == ds_size:
             json_to_file(results_list, output_folder, output_file)
             results_list=[]
 
@@ -58,10 +57,11 @@ def perform_experiment1(sender_checkpoint, receiver_checkpoint, dataset_name, sa
     output_folder=f"{getcwd()}/output/{output_file.replace('.jsonl', '')}"
     create_folder_if_not_exists(output_folder)
 
-    # ds=get_dataset(dataset_name)[start:end]
     ds=get_dataset(dataset_name, sample_size)
 
-    process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output_folder, output_file)
+    output_file_name=f"{time}_{output_file}"
+
+    process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output_folder, output_file_name)
     
     return 0
 
