@@ -210,7 +210,7 @@ def calc_loss(p1, p2):
                 x1,y1=get_position(p1)
                 x2,y2=get_position(p2)
                 if x1 != None and y1 != None:
-                    sum+=abs(x1-y1)*0.00001
+                    sum+=abs(x1-y1)*0.0001
                 else:
                     sum+=0.5
                 if x2 != None and y2 != None:
@@ -227,10 +227,10 @@ def calc_loss(p1, p2):
 
 
 
-def combine_texts(target, nl, predicted):
+def combine_texts(target, predicted):
     text = {
         'target': target,
-        "nl": nl,
+        # "nl": nl,
         'predicted': predicted,
         'cosine': get_cosine(target, predicted),
         'loss': calc_loss(target, predicted),
@@ -246,7 +246,7 @@ def combine_texts(target, nl, predicted):
 def evaluate_results(ifile_path, ofile_path):
     print(f"file path {ifile_path}")
     output_folder=f"{getcwd()}/output/{ofile_path}".replace(".jsonl", "")
-    results=open_file(ifile_path)
+    results=open_file(f"{getcwd()}/{ifile_path}")
 
     print("file opened")
     create_folder_if_not_exists(output_folder)
@@ -256,17 +256,20 @@ def evaluate_results(ifile_path, ofile_path):
     # evaluated=''
     for result in results:
         evaluated=None
-        result["nl"]=None
-        result["predicted"]=None
-        result["target"]=None
+
+        predicted=None
+        target=None
+
+        
+
         count+=1
         target=result["target"]
-        nl=result["nl"]
+        # nl=result["nl"]
         predicted=result["predicted"]
-        if result["target"] != None and result["nl"] != None and result["predicted"] != None:
-            evaluated=combine_texts(target, nl, predicted)
+        if target != None and predicted != None:
+            evaluated=combine_texts(target, predicted)
         
-        evaluated_results.append(evaluated)
+            evaluated_results.append(evaluated)
         if count%10000==0:
             print(f"Evaluated Results: {count} out of {len(results)}\n")
             # print_eval(evaluated)
