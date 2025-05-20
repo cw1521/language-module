@@ -51,8 +51,8 @@ def get_arg_dict_template():
     arg_dict["batch_size"] = None
     arg_dict["num_epochs"] = 10
     arg_dict["exp"]=None
-    # arg_dict["start"]=0
-    # arg_dict["end"]=-1
+    arg_dict["start"]=0
+    arg_dict["end"]=-1
     arg_dict["sample_size"]=500
     arg_dict["s1"]=None
     arg_dict["r1"]=None
@@ -211,32 +211,35 @@ def main():
     else:
         arg_dict = get_arg_dict(args)
         mode = arg_dict["mode"]
-        
+        start=get_int(arg_dict["start"], 0)
+        end=get_int(arg_dict["end"], -1)
         if mode == "train" or mode == "test":
             assert_valid_train_args(arg_dict)
             train(arg_dict, hf_token)
+            start=arg_dict["start"]
+            end=arg_dict["end"]
         elif mode == "eval":
             ifile=arg_dict["ifile"]
             ofile=arg_dict["ofile"]
             evaluate_results(ifile, ofile)
         elif mode == "exp":
             exp=arg_dict["exp"]
-            default_sample_size=500
-            sample_size=get_int(arg_dict["sample_size"], default_sample_size)
+            # default_sample_size=500
+            # sample_size=get_int(arg_dict["sample_size"], default_sample_size)
             # print(sample_size)
             if exp == "exp1":
                 s1=arg_dict["s1"]
                 r1=arg_dict["r1"]
                 ds_name=arg_dict["dataset_name"]
                 output_file=arg_dict["output"]
-                perform_experiment1(s1, r1, ds_name, sample_size, hf_token, output_file)
+                perform_experiment1(s1, r1, ds_name, start, end, hf_token, output_file)
             elif exp == "exp2":
                 s1=arg_dict["s1"]
                 r1=arg_dict["r1"]
                 r2=arg_dict["r2"]
                 ds_name=arg_dict["dataset_name"]
                 output_file=arg_dict["output"]
-                perform_experiment2(s1, r1, r2, ds_name, sample_size, hf_token, output_file)
+                perform_experiment2(s1, r1, r2, ds_name, start, end, hf_token, output_file)
         elif mode == "results":
             results.main()
 

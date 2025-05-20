@@ -54,11 +54,13 @@ def process_dataset(ds, sender_checkpoint, receiver_checkpoint, hf_token, output
 
 
 
-def perform_experiment1(sender_checkpoint, receiver_checkpoint, dataset_name, sample_size, hf_token, output_file):
+def perform_experiment1(sender_checkpoint, receiver_checkpoint, dataset_name, start, end, hf_token, output_file):
     output_folder=f"{getcwd()}/output/{output_file.replace('.jsonl', '')}"
     create_folder_if_not_exists(output_folder)
 
-    ds=load_dataset(dataset_name, split="test")["state"]
+    ds=load_dataset(dataset_name, split="test")["state"][start:end]
+    
+    print(f"Length of Dataset: {len(ds)}")
 
     output_file_name=f"{strftime('%H:%M:%S', gmtime(time()))}_{output_file}"
 

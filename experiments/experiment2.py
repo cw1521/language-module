@@ -1,5 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForTokenClassification 
 from transformers import AutoModelForSeq2SeqLM
+from datasets import load_dataset
 from ..langhelper import print_log, create_folder_if_not_exists, print_result
 from ..langhelper import write_log, data, json_to_file
 from time import time
@@ -132,12 +133,12 @@ def process_results(ds, sender_checkpoint, receiver1_checkpoint, receiver2_check
 
 
 
-def perform_experiment2(sender_checkpoint, receiver1_checkpoint, receiver2_checkpoint, dataset_name, sample_size, hf_token, output_file):
+def perform_experiment2(sender_checkpoint, receiver1_checkpoint, receiver2_checkpoint, dataset_name, start, end, hf_token, output_file):
     # print(receiver1_checkpoint)
     output_folder=f"{getcwd()}/output/{output_file.replace('.jsonl', '')}"
     create_folder_if_not_exists(output_folder)
 
-    ds=get_dataset(dataset_name, sample_size)
+    ds=load_dataset(dataset_name, split="test")["state"][start:end]
 
     output_file_name=f"{time()}_{output_file}"
 
